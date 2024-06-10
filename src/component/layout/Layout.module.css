@@ -1,0 +1,29 @@
+
+.container {
+    display: flex;
+  }
+  
+  .sidebarExpanded {
+    width: 250px;
+    transition: width 0.3s;
+  }
+  
+  .sidebarCollapsed {
+    width: 80px;
+    transition: width 0.3s;
+  }
+  
+  .mainExpanded {
+    flex-grow: 1;
+    padding: 20px;
+    transition: margin-left 0.3s;
+    margin-left: 0;
+  }
+  
+  .mainCollapsed {
+    flex-grow: 1;
+    padding: 20px;
+    transition: margin-left 0.3s;
+    margin-left: 0px;
+  }
+  
