@@ -21,8 +21,11 @@ const SocialIcon: React.FC<SocialIconProps> = ({ className, icon: Icon, href }) 
     </div>
   </Link>
 );
-
-const Footer: React.FC = () => {
+interface FooterProps {
+  isExpanded: boolean;
+  toggleSidebar: () => void;
+}
+const Footer:React.FC<FooterProps> = ({ isExpanded, toggleSidebar }) => {
   const [currentDateTime, setCurrentDateTime] = useState<Date | null>(null);
 
   useEffect(() => {
@@ -36,7 +39,7 @@ const Footer: React.FC = () => {
   const formattedDateTime = currentDateTime ? currentDateTime.toLocaleString() : "";
 
   return (
-    <footer className="w-full bg-gray-300">
+    <footer className={`${isExpanded ? 'px-5' : 'px-2'} bg-gray-300`}>
       <div className="container mx-auto flex flex-col sm:flex-row items-center justify-between">
         <div className="flex items-center justify-center md:justify-start text-gray-900 mb-4 sm:mb-0">
           <span className="text-xl font-medium">Risu Singh</span>
@@ -77,7 +80,7 @@ const Footer: React.FC = () => {
           />
         </div>
       </div>
-    </footer>
+     </footer>
   );
 };
 

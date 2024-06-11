@@ -1,7 +1,7 @@
 import React, { useState, ReactNode } from 'react';
 import Sidebar from '@/component/sidebar/Sidebar';
 import styles from './Layout.module.css';
-
+import Footer from "@/component/footer/Footer";
 interface LayoutProps {
   children: ReactNode;
 }
@@ -18,12 +18,15 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       <div className={`${isSidebarExpanded ? styles.sidebarExpanded : styles.sidebarCollapsed} bg-gray-900`}>
         <Sidebar isExpanded={isSidebarExpanded} toggleSidebar={toggleSidebar} />
       </div>
-      <main className={isSidebarExpanded ? styles.mainExpanded : styles.mainCollapsed}>
-        {children}
-      </main>
+      <div className={styles.main}>
+        <div className={styles.content}>
+          {children}
+        </div>
+        <Footer isExpanded={isSidebarExpanded} toggleSidebar={toggleSidebar} />
+  
+      </div>
     </div>
   );
 };
 
 export default Layout;
-
