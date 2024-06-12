@@ -1,14 +1,16 @@
+// import Layout from "@/component/layout/Layout";
+
 // src/pages/_app.tsx
 import { AppProps } from "next/app";
-import Layout from "@/component/layout/Layout";
 import "../styles/globals.css";
-
+import isAuth from "@/component/auth/isAuth";
 function MyApp({ Component, pageProps }: AppProps) {
   return (
-    <Layout>
+    // <Layout>
+    // </Layout>
       <Component {...pageProps} />
-    </Layout>
   );
 }
 
-export default MyApp;
+// export default MyApp;
+export default isAuth(MyApp);
