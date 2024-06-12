@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
-
+import { useAuth } from '@/contexts/AuthContext';
 const Login = () => {
   const [email, setEmail] = useState("");
   const [contact, setContact] = useState("");
@@ -10,7 +10,7 @@ const Login = () => {
   const [otpRequested, setOtpRequested] = useState(false);
   const [isLoginMode, setIsLoginMode] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false); // Add this state to handle multiple submissions
-
+  const { login } = useAuth();
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     if (isSubmitting) return; // Prevent multiple submissions
@@ -18,8 +18,14 @@ const Login = () => {
 
     try {
       if (otpRequested) {
-        const response = await axios.post("/api/auth", { enterOtp, encryptedOTP });
+        const response = await axios.post("/api/auth", { enterOtp, encryptedOTP,email });
         console.log("response:::;", response);
+        if (response.status === 200) {
+            const token = response.data.token;
+            login (token)
+        } else {
+            console.error('Failed to authenticate:', response.data);
+        }
       } else {
         handleRequestOTP();
       }
@@ -68,13 +74,12 @@ const Login = () => {
     setContact("");
     setName("");
   };
-
   return (
     <div className="flex justify-center items-center h-full">
       <div className="bg-white p-8 rounded shadow-md w-96">
         <h2 className="text-2xl mb-4">{isLoginMode ? "Login" : "Sign Up"}</h2>
         <form onSubmit={isLoginMode ? handleLogin : handleSignUp}>
-          <div className="mb-4">
+           <div className="mb-4">
             <label className="block text-gray-700 text-sm font-bold mb-2">
               Email:
             </label>
