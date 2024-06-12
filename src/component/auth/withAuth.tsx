@@ -5,19 +5,19 @@ import { useRouter } from 'next/router';
 import Layout from '../layout/Layout';
 const withAuth = (WrappedComponent: React.ComponentType) => {
     const ComponentWithAuth = (props: any) => {
-      const { isLogin } = useAuth();
+      const { isLoggedIn } = useAuth();
       const router = useRouter();
   
       useEffect(() => {
-        if (!isLogin) {
+        if (!isLoggedIn) {
           // Only push to the login page if we are not already on it
           if (router.pathname !== '/login') {
             router.push('/login');
           }
         }
-      }, [isLogin, router]);
+      }, [isLoggedIn, router]);
   
-      if (!isLogin && router.pathname !== '/login') {
+      if (!isLoggedIn && router.pathname !== '/login') {
         return null; // or a loading spinner
       }
   

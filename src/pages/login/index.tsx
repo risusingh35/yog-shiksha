@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { useAuth } from '@/contexts/AuthContext';
-import { useRouter } from 'next/router';
 const Login = () => {
   const [email, setEmail] = useState("");
   const [contact, setContact] = useState("");
@@ -12,7 +11,6 @@ const Login = () => {
   const [isLoginMode, setIsLoginMode] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false); // Add this state to handle multiple submissions
   const { login } = useAuth();
-  const router = useRouter();
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     if (isSubmitting) return; // Prevent multiple submissions
@@ -20,11 +18,13 @@ const Login = () => {
 
     try {
       if (otpRequested) {
-        const response = await axios.post("/api/auth", { enterOtp, encryptedOTP });
+        const response = await axios.post("/api/auth", { enterOtp, encryptedOTP,email });
         console.log("response:::;", response);
-        if (response.data) {
-            login();
-            router.push('/dashboard');
+        if (response.status === 200) {
+            const token = response.data.token;
+            login (token)
+        } else {
+            console.error('Failed to authenticate:', response.data);
         }
       } else {
         handleRequestOTP();
@@ -74,14 +74,8 @@ const Login = () => {
     setContact("");
     setName("");
   };
-  const handleLoginClick = () => {
-    login();
-    router.push('/dashboard');
-  };
   return (
     <div className="flex justify-center items-center h-full">
-         {/* <button   className="bg-blue-500 text-white px-4 py-2 rounded w-full hover:bg-blue-600" onClick={()=>handleLoginClick()}>Login</button> */}
-      
       <div className="bg-white p-8 rounded shadow-md w-96">
         <h2 className="text-2xl mb-4">{isLoginMode ? "Login" : "Sign Up"}</h2>
         <form onSubmit={isLoginMode ? handleLogin : handleSignUp}>

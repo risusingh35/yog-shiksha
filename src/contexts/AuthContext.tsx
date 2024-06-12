@@ -1,9 +1,12 @@
 // contexts/AuthContext.tsx
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
+
+import { useRouter } from 'next/router';
+import { clearAllLocalStorage, getLocalStorage, setLocalStorage } from '@/utils/loaclStorageService';
 
 interface AuthContextProps {
-  isLogin: boolean;
-  login: () => void;
+  isLoggedIn: boolean; 
+  login: (token: string) => void;
   logout: () => void;
 }
 
@@ -18,13 +21,29 @@ export const useAuth = () => {
 };
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [isLogin, setIsLogin] = useState(false);
-
-  const login = () => setIsLogin(true);
-  const logout = () => setIsLogin(false);
+  const [user, setUser] = useState<any>(null);
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
+  const router = useRouter();
+  useEffect(() => {
+    const token = getLocalStorage('token');
+    if (token) {
+      setIsLoggedIn(true); // Set isLoggedIn to true if token exists
+    }
+  }, []);
+  const login = (token: string) => {
+    setLocalStorage('token', token);
+    setUser(token)
+    setIsLoggedIn(true); 
+     router.push('/dashboard');
+  };
+  const logout = () => {
+    clearAllLocalStorage();
+    setUser(null);
+    router.push('/login');
+  };
 
   return (
-    <AuthContext.Provider value={{ isLogin, login, logout }}>
+    <AuthContext.Provider value={{ isLoggedIn, login, logout }}>
       {children}
     </AuthContext.Provider>
   );

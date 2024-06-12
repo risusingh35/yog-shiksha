@@ -1,4 +1,3 @@
-// import CryptoJS from 'crypto-js';
 import NextCrypto from 'next-crypto';
 
 const encryptOTP = async (otp: string): Promise<string> => {
