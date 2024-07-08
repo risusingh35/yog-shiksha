@@ -1,0 +1,27 @@
+.container {
+  display: flex;
+  height: 100vh;
+}
+
+.sidebarExpanded {
+  width: 250px;
+  transition: width 0.3s;
+}
+
+.sidebarCollapsed {
+  width: 80px;
+  transition: width 0.3s;
+}
+
+.main {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  background-color: darkturquoise;
+  transition: margin-left 0.3s;
+}
+
+.content {
+  flex-grow: 1;
+  padding: 20px;
+}
