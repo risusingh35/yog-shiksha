@@ -1,14 +1,13 @@
-import Layout from "../layout/Layout";
-const withAuth = (WrappedComponent: React.ComponentType) => {
-  const ComponentWithAuth = (props: any) => {
-    return <WrappedComponent {...props} />;
-  };
+// component/withAuth.tsx
+import React from "react";
+import isAuth from "./isAuth";
 
-  return (props: any) => (
-    <Layout>
-      <ComponentWithAuth {...props} />
-    </Layout>
-  );
+const withAuth = (WrappedComponent: React.ComponentType) => {
+  return (props: any) => {
+    const ComponentWithAuth = isAuth(WrappedComponent);
+    return <ComponentWithAuth {...props} />;
+  };
 };
 
 export default withAuth;
+

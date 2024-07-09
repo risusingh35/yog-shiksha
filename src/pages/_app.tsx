@@ -1,9 +1,12 @@
-// src/pages/_app.tsx
-import { AppProps } from 'next/app';
-import Layout from '@/component/layout/Layout';
-import '../styles/globals.css';
+import { Suspense } from "react";
+import { persistor, store } from "@/reduxStore/store";
+import { Provider } from "react-redux";
+import { PersistGate } from "redux-persist/integration/react";
+import { AppProps } from "next/app";
+import "../styles/globals.css";
 import { usePathname } from "next/navigation";
-import withAuth from '@/component/auth/withAuth';
+import withAuth from "@/component/auth/withAuth";
+
 function MyApp({ Component, pageProps }: AppProps) {
   const pathname = usePathname();
   // List of public routes
@@ -12,11 +15,16 @@ function MyApp({ Component, pageProps }: AppProps) {
   const AuthenticatedComponent = isProtectedRoute
     ? withAuth(Component)
     : Component;
+  const PageLoader = () => <>Loading...</>;
+
   return (
-    <AuthenticatedComponent/>
-    // <Layout>
-    //   <Component {...pageProps} />
-    // </Layout>
+    <Provider store={store}>
+      <PersistGate loading={null} persistor={persistor}>
+        <Suspense fallback={<PageLoader />}>
+          <AuthenticatedComponent {...pageProps} />
+        </Suspense>
+      </PersistGate>
+    </Provider>
   );
 }
 

@@ -29,10 +29,12 @@ const initialState = {
 };
 
 const isAuthSlice = createSlice({
-  name: "proposal",
+  name: "auth",
   initialState,
   reducers: {
     setIsAuth: (state, action) => {
+      console.log({action});
+      
       state.isAuth = action.payload.isAuth;
       state.token = action.payload.token;
     },

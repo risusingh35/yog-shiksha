@@ -7,10 +7,7 @@ const persistConfig = {
   key: "root",
   storage,
 };
-
-// export const persistedReducer = persistReducer(persistConfig, rootReducer);
-
-const appReducer = (state, action) => {
+const appReducer = (state:any, action:any) => {
   if (action.type === 'RESET') {
     localStorage.clear();
     return rootReducer(undefined, action);

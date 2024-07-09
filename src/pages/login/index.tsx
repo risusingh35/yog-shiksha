@@ -1,10 +1,11 @@
-import React, { useState } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
 import { useRouter } from "next/router";
 import { toast } from "react-toastify";
-// import { useAuth } from "@/contexts/AuthContext";
-import Spinner from '@/component/spinner/Spinner';
+import { useDispatch, useSelector } from "react-redux";
+import Spinner from "@/component/spinner/Spinner";
 import { setLocalStorage } from "@/utils/loaclStorageService";
+import { setIsAuth, resetIsAuth } from "@/reduxStore/Slice/isAuthSlice";
 const Login = () => {
   const [email, setEmail] = useState("");
   const [enterOtp, setEnterOtp] = useState("");
@@ -13,8 +14,13 @@ const Login = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
+  const dispatch = useDispatch();
   // const { login } = useAuth();
-
+  const { isAuth, token } = useSelector((state: any) => state.auth);
+  useEffect(() => {
+    console.log({ isAuth, token });
+    dispatch(resetIsAuth());
+  }, []);
   const handleLogin = async () => {
     if (isSubmitting) return;
     setIsSubmitting(true);
@@ -37,9 +43,11 @@ const Login = () => {
             progress: undefined,
           });
           const token = response.data.token;
-          setLocalStorage('token',token)
+          const isAuth = true;
+          setLocalStorage("token", token);
           // login(token);
-          router.push('/'); 
+          dispatch(setIsAuth({ isAuth, token }));
+          router.push("/");
         } else {
           console.error("Failed to authenticate:", response.data);
           toast.error(response.data.message, {
@@ -65,7 +73,7 @@ const Login = () => {
   const handleRequestOTP = async () => {
     if (!email) return;
     try {
-      setIsLoading(true)
+      setIsLoading(true);
       const response = await axios.post("/api/users/find-one", { email });
       console.log("response-find-one", response);
       setIsLoading(false);
@@ -115,14 +123,19 @@ const Login = () => {
   return (
     <div className="flex justify-center items-center h-full">
       <Spinner
-          text="Loading..." 
-          closedIn={125000}
-          onClose={() => setIsLoading(false)}
-          isVisible={isLoading}
-        />
+        text="Loading..."
+        closedIn={125000}
+        onClose={() => setIsLoading(false)}
+        isVisible={isLoading}
+      />
       <div className="bg-white p-8 rounded shadow-md w-96">
         <h2 className="text-2xl mb-4">Login</h2>
-        <form onSubmit={(e) => { e.preventDefault(); handleLogin(); }}>
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            handleLogin();
+          }}
+        >
           <div className="mb-4">
             <label className="block text-gray-700 text-sm font-bold mb-2">
               Email:
