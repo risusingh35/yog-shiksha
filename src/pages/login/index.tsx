@@ -78,7 +78,7 @@ const Login = () => {
       console.log("response-find-one", response);
       setIsLoading(false);
       if (response.status === 200) {
-        toast.success(response.data.message||`OTP successfully sent to ${email}`, {
+        toast.success(response.data.message, {
           position: "top-right",
           autoClose: 5000,
           hideProgressBar: false,
@@ -92,7 +92,7 @@ const Login = () => {
       } else {
         toast.error(response.data.message, {
           position: "top-right",
-          autoClose: 5000,
+          autoClose: 15000,
           hideProgressBar: false,
           closeOnClick: true,
           pauseOnHover: true,
@@ -104,13 +104,14 @@ const Login = () => {
     } catch (error: any) {
       toast.error(error?.response?.data?.error, {
         position: "top-right",
-        autoClose: 5000,
+        autoClose: 15000,
         hideProgressBar: false,
         closeOnClick: true,
         pauseOnHover: true,
         draggable: true,
         progress: undefined,
       });
+      setIsLoading(false)
       console.error("Failed to send OTP:", error);
     }
   };
