@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 import Spinner from "@/component/spinner/Spinner";
 import { setLocalStorage } from "@/utils/loaclStorageService";
 import { setIsAuth, resetIsAuth } from "@/reduxStore/Slice/isAuthSlice";
-import { ToastContainer,toast } from 'react-toastify';
+import { toast } from 'react-toastify';
 
 const Login = () => {
   const [email, setEmail] = useState("");

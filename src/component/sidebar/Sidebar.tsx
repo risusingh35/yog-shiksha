@@ -92,6 +92,18 @@ const Sidebar: React.FC<SidebarProps> = ({ isExpanded, toggleSidebar }) => {
           )}
         </div>
       </Link>
+      <Link href="/users">
+        <div
+          className={`p-2.5 mt-3 flex items-center rounded-md hover:bg-gray-700 px-4 duration-300 cursor-pointer  text-white ${
+            pathname === "/users" ? "font-bold bg-blue-600" : ""
+          } ${isExpanded ? "" : "justify-center"}`}
+        >
+          <IoMdSettings className={isExpanded ? "" : "mx-auto"} />
+          {isExpanded && (
+            <span className="text-[15px] ml-4">Users</span>
+          )}
+        </div>
+      </Link>
       {/* <Link href="/login">
         <div
           className={`p-2.5 mt-3 flex items-center rounded-md hover:bg-gray-700 px-4 duration-300 cursor-pointer  text-white ${
