@@ -4,6 +4,7 @@ import { useRouter } from "next/router";
 import { toast } from "react-toastify";
 // import { useAuth } from "@/contexts/AuthContext";
 import Spinner from '@/component/spinner/Spinner';
+import { setLocalStorage } from "@/utils/loaclStorageService";
 const Login = () => {
   const [email, setEmail] = useState("");
   const [enterOtp, setEnterOtp] = useState("");
@@ -36,6 +37,7 @@ const Login = () => {
             progress: undefined,
           });
           const token = response.data.token;
+          setLocalStorage('token',token)
           // login(token);
           router.push('/'); 
         } else {
