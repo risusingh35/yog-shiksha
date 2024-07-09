@@ -1,11 +1,12 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { useRouter } from "next/router";
-import { toast } from "react-toastify";
 import { useDispatch, useSelector } from "react-redux";
 import Spinner from "@/component/spinner/Spinner";
 import { setLocalStorage } from "@/utils/loaclStorageService";
 import { setIsAuth, resetIsAuth } from "@/reduxStore/Slice/isAuthSlice";
+import { ToastContainer,toast } from 'react-toastify';
+
 const Login = () => {
   const [email, setEmail] = useState("");
   const [enterOtp, setEnterOtp] = useState("");
@@ -15,7 +16,6 @@ const Login = () => {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const dispatch = useDispatch();
-  // const { login } = useAuth();
   const { isAuth, token } = useSelector((state: any) => state.auth);
   useEffect(() => {
     console.log({ isAuth, token });
@@ -78,7 +78,7 @@ const Login = () => {
       console.log("response-find-one", response);
       setIsLoading(false);
       if (response.status === 200) {
-        toast.success(response.data.message, {
+        toast.success(response.data.message||`OTP successfully sent to ${email}`, {
           position: "top-right",
           autoClose: 5000,
           hideProgressBar: false,

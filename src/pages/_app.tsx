@@ -6,7 +6,8 @@ import { AppProps } from "next/app";
 import "../styles/globals.css";
 import { usePathname } from "next/navigation";
 import withAuth from "@/component/auth/withAuth";
-
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 function MyApp({ Component, pageProps }: AppProps) {
   const pathname = usePathname();
   // List of public routes
@@ -22,6 +23,7 @@ function MyApp({ Component, pageProps }: AppProps) {
       <PersistGate loading={null} persistor={persistor}>
         <Suspense fallback={<PageLoader />}>
           <AuthenticatedComponent {...pageProps} />
+          <ToastContainer />
         </Suspense>
       </PersistGate>
     </Provider>
