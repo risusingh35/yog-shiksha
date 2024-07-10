@@ -5,6 +5,8 @@ interface Address {
   country: string;
   state: string;
   city: string;
+  addressLine1: string;
+  pinCode: string;
 }
 
 interface IUser extends Document {
@@ -16,12 +18,17 @@ interface IUser extends Document {
   profilePhoto?: Buffer;
   isActive: boolean;
   isActiveSubscription: boolean;
+  deletedAt?: Date; 
+  isDeleted: boolean;
+ 
 }
 
 const addressSchema = new Schema<Address>({
   country: { type: String, required: true },
   state: { type: String, required: true },
   city: { type: String, required: true },
+  addressLine1: { type: String, required: true },
+  pinCode: { type: String, required: true },
 });
 
 const userSchema: Schema = new Schema<IUser>({
@@ -33,6 +40,8 @@ const userSchema: Schema = new Schema<IUser>({
   profilePhoto: { type: Buffer },
   isActive: { type: Boolean, required: true, default: true },
   isActiveSubscription: { type: Boolean, default: false },
+  deletedAt: { type: Date } ,
+  isDeleted: { type: Boolean, default: false }
 });
 
 export default mongoose.models.User || mongoose.model<IUser>('User', userSchema);

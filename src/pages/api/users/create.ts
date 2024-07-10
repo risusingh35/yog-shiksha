@@ -36,6 +36,9 @@ export default async function handler(
           state: [state],
           city: [city],
           isActive: [isActive],
+          pinCode: [pinCode],
+          addressLine1: [addressLine1],
+          
         } = fields as any;
 
         const profilePhoto = files?.profilePhoto;
@@ -49,11 +52,14 @@ export default async function handler(
             country,
             state,
             city,
+            pinCode,
+            addressLine1
           },
           profilePhoto,
           isActive,
+          isDeleted: false,
         });
-
+        console.log({newUser});
         await newUser.save();
     
         res.status(201).json({ success: true, data: newUser });

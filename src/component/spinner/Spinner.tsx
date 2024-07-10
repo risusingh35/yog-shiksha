@@ -1,5 +1,5 @@
 // Spinner.tsx
-import React, { useEffect } from "react";
+import { FC, useEffect } from "react";
 import { IoIosClose } from "react-icons/io";
 
 interface SpinnerProps {
@@ -9,7 +9,7 @@ interface SpinnerProps {
   isVisible: boolean; // Add isVisible prop
 }
 
-const Spinner: React.FC<SpinnerProps> = ({
+const Spinner: FC<SpinnerProps> = ({
   text = "Loading",
   closedIn = 15000,
   onClose,

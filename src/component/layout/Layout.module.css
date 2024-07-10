@@ -15,7 +15,7 @@
 
 .mainExpanded {
   flex-grow: 1;
-  padding: 10px;
+  padding-left: 5px;
   transition: margin-left 0.3s;
   margin-left: 0;
   height: 100vh; /* Full viewport height */
@@ -27,7 +27,7 @@
 
 .mainCollapsed {
   flex-grow: 1;
-  padding: 20px;
+  padding-left:0;
   transition: margin-left 0.3s;
   margin-left: 0px;
   height: 100vh; /* Full viewport height */

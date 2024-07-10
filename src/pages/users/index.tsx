@@ -3,6 +3,8 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import Spinner from "@/component/spinner/Spinner";
 import { BsPencilSquare, BsTrash } from "react-icons/bs";
+import PageTitleBar from "@/component/pageTitleBar/PageTitleBar";
+import axiosInstance from "@/utils/axiosInstance";
 
 interface User {
   _id: string;
@@ -28,7 +30,8 @@ const Users: FC = () => {
   const getAllUsers = async () => {
     try {
       setIsLoading(true);
-      const response = await axios.get("/api/users");
+      // const response = await axios.get("/api/users");
+      const response = await axiosInstance.get("/api/users");
       console.log({ response });
       setUsers(response.data.data); 
     } catch (error: any) {
@@ -56,11 +59,39 @@ const Users: FC = () => {
     console.log("Edit user:", userId);
   };
 
-  const handleDeleteUser = (userId: string) => {
-    // Implement delete user logic
-    console.log("Delete user:", userId);
-  };
+  const handleDeleteUser = async (userId: string) => {
+    try {
+      const response = await axios.delete('/api/users', { data: { userId } });
 
+      if (response.data.success) {
+        toast.success('User deleted successfully', {
+          position: "top-right",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+        });
+        // Refresh the user list or remove the deleted user from the state
+        setUsers(users.filter(user => user._id !== userId));
+      } else {
+        throw new Error('Failed to delete user');
+      }
+    } catch (error: any) {
+      toast.error(error?.response?.data?.error || "Failed to delete user", {
+        position: "top-right",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+      });
+      console.error("Failed to delete user:", error);
+    }
+  };
+  
   return (
     <div className="flex justify-center items-center flex-col h-full">
       <Spinner
@@ -69,8 +100,8 @@ const Users: FC = () => {
         onClose={() => setIsLoading(false)}
         isVisible={isLoading}
       />
-      <h1 className="text-2xl font-bold mb-4">Users</h1>
-      {users.length > 0 ? (
+      <PageTitleBar title='Users'/>
+        {users.length > 0 ? (
         <div className="w-full max-w-full bg-white shadow-md  overflow-hidden">
           <table className="w-full">
             <thead>

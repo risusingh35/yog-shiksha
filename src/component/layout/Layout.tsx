@@ -1,4 +1,4 @@
-import React, { useState, ReactNode } from "react";
+import  { useState, ReactNode,FC } from "react";
 import Sidebar from "@/component/sidebar/Sidebar";
 import styles from "./Layout.module.css";
 import Footer from "../footer/Footer";
@@ -7,7 +7,7 @@ interface LayoutProps {
   children: ReactNode;
 }
 
-const Layout: React.FC<LayoutProps> = ({ children }) => {
+const Layout:FC<LayoutProps> = ({ children }) => {
   const [isSidebarExpanded, setIsSidebarExpanded] = useState(true);
 
   const toggleSidebar = () => {

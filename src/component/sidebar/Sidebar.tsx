@@ -14,7 +14,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isExpanded, toggleSidebar }) => {
 
   return (
     <div
-      className={`overflow-y-auto sidebar fixed top-0 bottom-0 lg:left-0 p-2 text-center bg-gray-900 ${
+      className={`overflow-y-auto sidebar fixed top-0 bottom-0 lg:left-0 px-2 text-center bg-gray-900 ${
         isExpanded ? "w-64" : "w-20"
       } transition-all duration-300`}
     >
@@ -29,7 +29,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isExpanded, toggleSidebar }) => {
         )}
       </div>
 
-      <div className="my-2 bg-gray-600 h-[1px]"></div>
+      <div className="mb-2 mt-1 bg-gray-600 h-[1px]"></div>
 
       {isExpanded && (
         <div className="p-2.5 flex items-center rounded-md px-4 duration-300 cursor-pointer bg-gray-700 text-white">
