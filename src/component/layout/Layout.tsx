@@ -28,7 +28,8 @@ const Layout:FC<LayoutProps> = ({ children }) => {
           isSidebarExpanded ? styles.mainExpanded : styles.mainCollapsed
         }
       >
-        <main className="main">{children}</main>
+         <main style={{ maxHeight: `calc(100vh - 90px)`, overflowY: 'auto' }} >
+         {children}</main>
         <Footer />
       </div>
     </div>
