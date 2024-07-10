@@ -9,6 +9,7 @@ import { toast } from 'react-toastify';
 
 const Login = () => {
   const [email, setEmail] = useState("");
+  const [loggedInUser, setLoggedInUser] = useState({});
   const [enterOtp, setEnterOtp] = useState("");
   const [encryptedOTP, setEncryptedOTP] = useState("");
   const [otpRequested, setOtpRequested] = useState(false);
@@ -29,7 +30,7 @@ const Login = () => {
         const response = await axios.post("/api/auth", {
           enterOtp,
           encryptedOTP,
-          email,
+          loggedInUser,
         });
         console.log("response:::;", response);
         if (response.status === 200) {
@@ -76,6 +77,7 @@ const Login = () => {
       setIsLoading(true);
       const response = await axios.post("/api/users/find-one", { email });
       console.log("response-find-one", response);
+      setLoggedInUser(response?.data?.user)
       setIsLoading(false);
       if (response.status === 200) {
         toast.success(response.data.message, {

@@ -23,7 +23,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       const otp =await generateOTP();
     try {
         await sendEmailWithOTP(email, otp);
-        res.status(200).json({encryptOTP:await encryptOTP(otp),message:`OTP successfully sent to ${email}`});
+        res.status(200).json({user,encryptOTP:await encryptOTP(otp),message:`OTP successfully sent to ${email}`});
     } catch (error:any) {
         console.log('Error sending email:', error);
         res.status(500).json({ message: 'Failed to send OTP', error: error });

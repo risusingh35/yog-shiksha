@@ -5,7 +5,7 @@ import Spinner from "@/component/spinner/Spinner";
 import { BsPencilSquare, BsTrash } from "react-icons/bs";
 import PageTitleBar from "@/component/pageTitleBar/PageTitleBar";
 import axiosInstance from "@/utils/axiosInstance";
-
+import { useRouter } from "next/router";
 interface User {
   _id: string;
   email: string;
@@ -26,16 +26,16 @@ interface User {
 const Users: FC = () => {
   const [users, setUsers] = useState<User[]>([]);
   const [isLoading, setIsLoading] = useState(false);
-
+  const router = useRouter();
   const getAllUsers = async () => {
     try {
       setIsLoading(true);
       // const response = await axios.get("/api/users");
-      const response = await axiosInstance.get("/api/users");
+      const response = await axiosInstance.get("/users");
       console.log({ response });
       setUsers(response.data.data); 
     } catch (error: any) {
-      toast.error(error?.response?.data?.error || "Failed to fetch users", {
+      toast.error(error?.response?.data?.message || "Failed to fetch users", {
         position: "top-right",
         autoClose: 15000,
         hideProgressBar: false,
@@ -44,7 +44,11 @@ const Users: FC = () => {
         draggable: true,
         progress: undefined,
       });
+     if (error?.response?.status===403) {
+      router.push("/login");
+     }
       console.error("Failed to get Users list:", error);
+
     } finally {
       setIsLoading(false);
     }
