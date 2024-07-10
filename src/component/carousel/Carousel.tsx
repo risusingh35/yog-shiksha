@@ -32,15 +32,15 @@ const Carousel: FC<CarouselProps> = ({ slides }) => {
 
   return (
     <div className="relative overflow-hidden h-screen">
-      <div className="absolute inset-0 flex items-center justify-center ">
+      <div className="absolute inset-0 flex items-center justify-center">
         {slides.map((slide, index) => {
           let slideClass = "absolute w-64 h-64 transition-opacity duration-500 opacity-0 pointer-events-none";
           if (index === currentIndex) {
             slideClass = "absolute w-64 h-64 transition-opacity duration-500 opacity-100";
           } else if (index === (currentIndex - 1 + slides.length) % slides.length) {
-            slideClass = "relative w-64 h-64 transition-opacity duration-500 opacity-100 left-0";
+            slideClass = "absolute w-64 h-64 transition-opacity duration-500 opacity-75 left-0";
           } else if (index === (currentIndex + 1) % slides.length) {
-            slideClass = "relative w-64 h-64 transition-opacity duration-500 opacity-100 right-0";
+            slideClass = "absolute w-64 h-64 transition-opacity duration-500 opacity-75 right-0";
           }
           return (
             <div key={slide.id} className={slideClass}>
