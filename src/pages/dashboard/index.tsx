@@ -2,7 +2,21 @@ import PageTitleBar from "@/component/pageTitleBar/PageTitleBar";
 import Spinner from "@/component/spinner/Spinner";
 import { FC, useState, useEffect, useRef } from "react";
 import Highcharts, { Options, Chart } from "highcharts";
-import HighchartsReact, { HighchartsReactRefObject } from "highcharts-react-official";
+import HighchartsReact, {
+  HighchartsReactRefObject,
+} from "highcharts-react-official";
+import dynamic from "next/dynamic";
+import MultipleCollapsibleSections from "@/component/collapsible/MultipleCollapsibleSections";
+
+const WorldMapper = dynamic(() => import("@/component/mapper/WorldMapper"), {
+  ssr: false,
+});
+const IndiaStateMapper = dynamic(
+  () => import("@/component/mapper/IndiaStateMapper"),
+  {
+    ssr: false,
+  }
+);
 
 const Dashboard: FC = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -10,13 +24,12 @@ const Dashboard: FC = () => {
   const donutChartRef2 = useRef<HighchartsReactRefObject>(null);
 
   const drawTotal = (chart: Chart) => {
-    const total = chart.series[0].data.reduce((acc, point) => acc + (point.y ? point.y:0), 0);
+    const total = chart.series[0].data.reduce(
+      (acc, point) => acc + (point.y ? point.y : 0),
+      0
+    );
     chart.renderer
-      .text(
-        `Total: ${total}`,
-        100,
-        chart.plotHeight / 2 + chart.plotTop
-      )
+      .text(`Total: ${total}`, 100, chart.plotHeight / 2 + chart.plotTop)
       .css({
         color: "#000",
         fontSize: "16px",
@@ -60,48 +73,48 @@ const Dashboard: FC = () => {
     { name: "Delete", y: 24 },
     { name: "Inactive", y: 120 },
   ];
-const pieDataLabelsStyle={
-  fontWeight: "bold",
-  color: "black",
-  fontSize: "1rem",
-  textOutline: "none",
-}
-const donutDataLabelsStyle={
-  fontWeight: "bold",
-  color: "black",
-  fontSize: "0.8rem",
-  textOutline: "none",
-}
-const piePlotOptions={
-  pie: {
-    allowPointSelect: true,
-    cursor: "pointer",
-    dataLabels: {
-      enabled: true,
-      distance: -50,
-      format: "{point.percentage:.1f} %",
-      style:pieDataLabelsStyle,
+  const pieDataLabelsStyle = {
+    fontWeight: "bold",
+    color: "black",
+    fontSize: "1rem",
+    textOutline: "none",
+  };
+  const donutDataLabelsStyle = {
+    fontWeight: "bold",
+    color: "black",
+    fontSize: "0.8rem",
+    textOutline: "none",
+  };
+  const piePlotOptions = {
+    pie: {
+      allowPointSelect: true,
+      cursor: "pointer",
+      dataLabels: {
+        enabled: true,
+        distance: -50,
+        format: "{point.percentage:.1f} %",
+        style: pieDataLabelsStyle,
+      },
     },
-  },
-}
-const donutPlotOptions={
-  pie: {
-    allowPointSelect: true,
-    cursor: "pointer",
-    dataLabels: {
-      enabled: true,
-      distance: -35,
-      format: "{point.percentage:.1f}%",
-      style: donutDataLabelsStyle,
+  };
+  const donutPlotOptions = {
+    pie: {
+      allowPointSelect: true,
+      cursor: "pointer",
+      dataLabels: {
+        enabled: true,
+        distance: -35,
+        format: "{point.percentage:.1f}%",
+        style: donutDataLabelsStyle,
+      },
+      // center: ["50%", "50%"],
+      // borderWidth: 3,
     },
-    // center: ["50%", "50%"],
-    // borderWidth: 3,
-  },
-  series: {
-    animation: false,
-    showInLegend: true,
-  },
-}
+    series: {
+      animation: false,
+      showInLegend: true,
+    },
+  };
   const options1: Options = {
     chart: {
       type: "pie",
@@ -138,7 +151,7 @@ const donutPlotOptions={
     subtitle: {
       text: "Active, Subscription, Delete, and Inactive",
     },
-    plotOptions:piePlotOptions,
+    plotOptions: piePlotOptions,
     series: [
       {
         type: "pie",
@@ -215,9 +228,8 @@ const donutPlotOptions={
       },
     ],
   };
-
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full ">
       <Spinner
         text="Loading..."
         closedIn={15000}
@@ -225,27 +237,42 @@ const donutPlotOptions={
         isVisible={isLoading}
       />
       <PageTitleBar title="Dashboard" />
-      <div className="flex flex-wrap justify-around">
-        <div className="w-full sm:w-1/1 md:w-1/2 lg:w-1/4 p-2">
-          <HighchartsReact highcharts={Highcharts} options={options1} />
+
+      <div className="overflow-y-auto">
+        <div className="flex flex-wrap justify-around">
+          <div className="w-full sm:w-1/1 md:w-1/2 lg:w-1/4 p-2">
+            <HighchartsReact highcharts={Highcharts} options={options1} />
+          </div>
+          <div className="w-full sm:w-1/1 md:w-1/2 lg:w-1/4 p-2">
+            <HighchartsReact highcharts={Highcharts} options={options2} />
+          </div>
+          <div className="w-full sm:w-1/1 md:w-1/2 lg:w-1/4 p-2">
+            <HighchartsReact
+              ref={donutChartRef1}
+              highcharts={Highcharts}
+              options={donutChartOptions1}
+            />
+          </div>
+          <div className="w-full sm:w-1/1 md:w-1/2 lg:w-1/4 p-2">
+            <HighchartsReact
+              ref={donutChartRef2}
+              highcharts={Highcharts}
+              options={donutChartOptions2}
+            />
+          </div>
         </div>
-        <div className="w-full sm:w-1/1 md:w-1/2 lg:w-1/4 p-2">
-          <HighchartsReact highcharts={Highcharts} options={options2} />
+
+        <div className="flex justify-center items-center flex-col">
+          <h1>Device Locations Worldwide</h1>
+          <WorldMapper />
         </div>
-        <div className="w-full sm:w-1/1 md:w-1/2 lg:w-1/4 p-2">
-          <HighchartsReact
-            ref={donutChartRef1}
-            highcharts={Highcharts}
-            options={donutChartOptions1}
-          />
+
+        <div className="flex justify-center items-center flex-col">
+          <h1>Device Locations in Indian States</h1>
+          <IndiaStateMapper />
         </div>
-      
-        <div className="w-full sm:w-1/1 md:w-1/2 lg:w-1/4 p-2">
-          <HighchartsReact
-            ref={donutChartRef2}
-            highcharts={Highcharts}
-            options={donutChartOptions2}
-          />
+        <div>
+          <MultipleCollapsibleSections />
         </div>
       </div>
     </div>
