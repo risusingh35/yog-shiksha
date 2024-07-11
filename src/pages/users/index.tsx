@@ -6,6 +6,7 @@ import { BsPencilSquare, BsTrash } from "react-icons/bs";
 import PageTitleBar from "@/component/pageTitleBar/PageTitleBar";
 import axiosInstance from "@/utils/axiosInstance";
 import { useRouter } from "next/router";
+
 interface User {
   _id: string;
   email: string;
@@ -27,13 +28,13 @@ const Users: FC = () => {
   const [users, setUsers] = useState<User[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
+
   const getAllUsers = async () => {
     try {
       setIsLoading(true);
-      // const response = await axios.get("/api/users");
       const response = await axiosInstance.get("/users");
       console.log({ response });
-      setUsers(response.data.data); 
+      setUsers(response.data.data);
     } catch (error: any) {
       toast.error(error?.response?.data?.message || "Failed to fetch users", {
         position: "top-right",
@@ -44,11 +45,10 @@ const Users: FC = () => {
         draggable: true,
         progress: undefined,
       });
-     if (error?.response?.status===403) {
-      router.push("/login");
-     }
+      if (error?.response?.status === 403) {
+        router.push("/login");
+      }
       console.error("Failed to get Users list:", error);
-
     } finally {
       setIsLoading(false);
     }
@@ -59,7 +59,6 @@ const Users: FC = () => {
   }, []);
 
   const handleEditUser = (userId: string) => {
-    // Implement edit user logic
     console.log("Edit user:", userId);
   };
 
@@ -77,7 +76,6 @@ const Users: FC = () => {
           draggable: true,
           progress: undefined,
         });
-        // Refresh the user list or remove the deleted user from the state
         setUsers(users.filter(user => user._id !== userId));
       } else {
         throw new Error('Failed to delete user');
@@ -95,7 +93,7 @@ const Users: FC = () => {
       console.error("Failed to delete user:", error);
     }
   };
-  
+
   return (
     <div className="flex justify-center items-center flex-col h-full">
       <Spinner
@@ -104,60 +102,62 @@ const Users: FC = () => {
         onClose={() => setIsLoading(false)}
         isVisible={isLoading}
       />
-      <PageTitleBar title='Users'/>
-        {users.length > 0 ? (
-        <div className="w-full max-w-full bg-white shadow-md  overflow-hidden">
-          <table className="w-full">
-            <thead>
-              <tr className="bg-gray-100 border-b">
-                <th className="text-left py-2 px-3 border-r">Email</th>
-                <th className="text-left py-2 px-3 border-r">Name</th>
-                <th className="text-left py-2 px-3 border-r">Contact</th>
-                <th className="text-center py-2 px-3 border-r">Status</th>
-                <th className="text-center py-2 px-3 border-r">Subscription</th>
-                <th className="text-center py-2 px-3">Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {users.map((user) => (
-                <Fragment key={user._id}>
-                  <tr className="border-b hover:bg-gray-50">
-                    <td className="py-2 px-3 border-r">{user.email}</td>
-                    <td className="py-2 px-3 border-r">{`${user.firstName} ${user.lastName}`}</td>
-                    <td className="py-2 px-3 border-r">{user.contact}</td>
-                    <td className="py-2 px-3 border-r text-center">
-                      {user.isActive ? (
-                        <span className="inline-block w-4 h-4 rounded-full bg-green-500"></span>
-                      ) : (
-                        <span className="inline-block w-4 h-4 rounded-full bg-red-500"></span>
-                      )}
-                    </td>
-                    <td className="py-2 px-3 border-r text-center">
-                      {user.isActiveSubscription ? (
-                        <span className="inline-block w-4 h-4 rounded-full bg-green-500"></span>
-                      ) : (
-                        <span className="inline-block w-4 h-4 rounded-full bg-gray-400"></span>
-                      )}
-                    </td>
-                    <td className="py-2 px-3 flex justify-center items-center space-x-2">
-                      <button
-                        onClick={() => handleEditUser(user._id)}
-                        className="text-blue-500 hover:text-blue-700"
-                      >
-                        <BsPencilSquare className="h-5 w-5" />
-                      </button>
-                      <button
-                        onClick={() => handleDeleteUser(user._id)}
-                        className="text-red-500 hover:text-red-700"
-                      >
-                        <BsTrash className="h-5 w-5" />
-                      </button>
-                    </td>
-                  </tr>
-                </Fragment>
-              ))}
-            </tbody>
-          </table>
+      <PageTitleBar title="Users" />
+      {users.length > 0 ? (
+        <div className="w-full max-w-full bg-white shadow-md">
+          <div className="overflow-y-auto" style={{ maxHeight: 'calc(100vh - 200px)' }}>
+            <table className="w-full">
+              <thead className="bg-gray-100 border-b">
+                <tr>
+                  <th className="text-left py-2 px-3 border-r">Email</th>
+                  <th className="text-left py-2 px-3 border-r">Name</th>
+                  <th className="text-left py-2 px-3 border-r">Contact</th>
+                  <th className="text-center py-2 px-3 border-r">Status</th>
+                  <th className="text-center py-2 px-3 border-r">Subscription</th>
+                  <th className="text-center py-2 px-3">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {users.map((user) => (
+                  <Fragment key={user._id}>
+                    <tr className="border-b hover:bg-gray-50">
+                      <td className="py-2 px-3 border-r">{user.email}</td>
+                      <td className="py-2 px-3 border-r">{`${user.firstName} ${user.lastName}`}</td>
+                      <td className="py-2 px-3 border-r">{user.contact}</td>
+                      <td className="py-2 px-3 border-r text-center">
+                        {user.isActive ? (
+                          <span className="inline-block w-4 h-4 rounded-full bg-green-500"></span>
+                        ) : (
+                          <span className="inline-block w-4 h-4 rounded-full bg-red-500"></span>
+                        )}
+                      </td>
+                      <td className="py-2 px-3 border-r text-center">
+                        {user.isActiveSubscription ? (
+                          <span className="inline-block w-4 h-4 rounded-full bg-green-500"></span>
+                        ) : (
+                          <span className="inline-block w-4 h-4 rounded-full bg-gray-400"></span>
+                        )}
+                      </td>
+                      <td className="py-2 px-3 flex justify-center items-center space-x-2">
+                        <button
+                          onClick={() => handleEditUser(user._id)}
+                          className="text-blue-500 hover:text-blue-700"
+                        >
+                          <BsPencilSquare className="h-5 w-5" />
+                        </button>
+                        <button
+                          onClick={() => handleDeleteUser(user._id)}
+                          className="text-red-500 hover:text-red-700"
+                        >
+                          <BsTrash className="h-5 w-5" />
+                        </button>
+                      </td>
+                    </tr>
+                  </Fragment>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       ) : (
         <p>No users found.</p>

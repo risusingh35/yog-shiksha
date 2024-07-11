@@ -126,7 +126,7 @@ const Login = () => {
   return (
     <div className="flex justify-center items-center h-full">
       <Spinner
-        text="Loading..."
+        text="Sending OTP..."
         closedIn={125000}
         onClose={() => setIsLoading(false)}
         isVisible={isLoading}

@@ -60,6 +60,25 @@ export default async function handler(
           isDeleted: false,
         });
         console.log({newUser});
+        // for (let i = 1; i < 1001; i++) {
+        //   const dummyUser =new User({
+        //     email:"risusingh35@gmail.com"+i,
+        //     firstName:"Risu"+i,
+        //     lastName:"Singh"+i,
+        //     contact:"777181598",
+        //     address: {
+        //       country:"India",
+        //       state:"Gujarat",
+        //       city:"Ahemdabad",
+        //       pinCode:"12345"+1,
+        //       addressLine1:"My Home"+1
+        //     },
+        //     isActive: Math.random() > 0.5,
+        //     isDeleted: Math.random() > 0.5,
+        //     isActiveSubscription: Math.random() > 0.5
+        //   })
+        //   await dummyUser.save();
+        // }
         await newUser.save();
     
         res.status(201).json({ success: true, data: newUser });
