@@ -1,11 +1,9 @@
 import PageTitleBar from "@/component/pageTitleBar/PageTitleBar";
 import Spinner from "@/component/spinner/Spinner";
-import { FC, useState, useEffect, useRef } from "react";
-import Highcharts, { Options, Chart } from "highcharts";
-import HighchartsReact, {
-  HighchartsReactRefObject,
-} from "highcharts-react-official";
+import { FC, useState, useEffect } from "react";
 import dynamic from "next/dynamic";
+import Highcharts, { Options } from "highcharts";
+import ChartComponent from "@/component/highChart/ChartComponent";
 
 const WorldMapper = dynamic(() => import("@/component/mapper/WorldMapper"), {
   ssr: false,
@@ -19,34 +17,6 @@ const IndiaStateMapper = dynamic(
 
 const Dashboard: FC = () => {
   const [isLoading, setIsLoading] = useState(false);
-  const donutChartRef1 = useRef<HighchartsReactRefObject>(null);
-  const donutChartRef2 = useRef<HighchartsReactRefObject>(null);
-
-  const drawTotal = (chart: Chart) => {
-    const total = chart.series[0].data.reduce(
-      (acc, point) => acc + (point.y ? point.y : 0),
-      0
-    );
-    chart.renderer
-      .text(`Total: ${total}`, 100, chart.plotHeight / 2 + chart.plotTop)
-      .css({
-        color: "#000",
-        fontSize: "16px",
-        fontWeight: "bold",
-        textAlign: "center",
-      })
-      .attr({ zIndex: 5 })
-      .add();
-  };
-
-  useEffect(() => {
-    if (donutChartRef1.current && donutChartRef1.current.chart) {
-      drawTotal(donutChartRef1.current.chart);
-    }
-    if (donutChartRef2.current && donutChartRef2.current.chart) {
-      drawTotal(donutChartRef2.current.chart);
-    }
-  }, []);
 
   const data1 = [
     { name: "Active", y: 30 },
@@ -72,6 +42,14 @@ const Dashboard: FC = () => {
     { name: "Delete", y: 24 },
     { name: "Inactive", y: 120 },
   ];
+  const getTotal=(data:any)=>{
+    let total=data.reduce(
+      (acc:any, point:any) => acc + point.y,
+      0
+    );
+      
+    return total
+  }
   const pieDataLabelsStyle = {
     fontWeight: "bold",
     color: "black",
@@ -106,12 +84,10 @@ const Dashboard: FC = () => {
         format: "{point.percentage:.1f}%",
         style: donutDataLabelsStyle,
       },
-      // center: ["50%", "50%"],
-      // borderWidth: 3,
-    },
-    series: {
-      animation: false,
-      showInLegend: true,
+      series: {
+        animation: false,
+        showInLegend: true,
+      },
     },
   };
   const options1: Options = {
@@ -174,11 +150,14 @@ const Dashboard: FC = () => {
       },
     },
     title: {
-      text: "Users",
-    },
-    subtitle: {
-      text: "Active, Subscription, Delete, and Inactive",
-    },
+      text: `User<br>${getTotal(data3)}`,
+      align: 'center',
+      verticalAlign: 'middle',
+      y: 15,
+      style: {
+          fontSize: '1.1em'
+      }
+  },
     tooltip: {
       pointFormat: "<b>{point.name}: {point.y}</b>",
     },
@@ -207,12 +186,21 @@ const Dashboard: FC = () => {
         valueSuffix: "%",
       },
     },
+    // title: {
+    //   text: "Users",
+    // },
+    // subtitle: {
+    //   text: "Active, Subscription, Delete, and Inactive",
+    // },
     title: {
-      text: "Users",
-    },
-    subtitle: {
-      text: "Active, Subscription, Delete, and Inactive",
-    },
+      text: `User<br>${getTotal(data4)}`,
+      align: 'center',
+      verticalAlign: 'middle',
+      y: 15,
+      style: {
+          fontSize: '1.1em'
+      }
+  },
     tooltip: {
       pointFormat: "<b>{point.name}: {point.y}</b>",
     },
@@ -227,8 +215,102 @@ const Dashboard: FC = () => {
       },
     ],
   };
+  const generateMonthlyIncomeData = () => {
+    const data: Record<number, number[]> = {};
+    const now = new Date();
+    const currentYear = now.getFullYear();
+  
+    for (let year = currentYear - 4; year <= currentYear; year++) {
+      data[year] = [];
+      for (let month = 0; month < 12; month++) {
+        const income = Math.floor(Math.random() * 5000) + 1000; // Random income between 1000 and 6000
+        data[year].push(income);
+      }
+    }
+    return data;
+  };
+  
+  const monthlyIncomeData = generateMonthlyIncomeData();
+  
+  const lineChartSeriesData = Object.keys(monthlyIncomeData).map((year) => ({
+    name: year,
+    type: "line" as const, // Ensure type is 'line'
+    data: monthlyIncomeData[Number(year)],
+  }));
+  
+  const lineChartOptions: Options = {
+    chart: {
+      type: "line",
+    },
+    title: {
+      text: "Monthly Income Comparison for the Last 5 Years",
+    },
+    xAxis: {
+      categories: [
+        "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+        "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
+      ],
+      title: {
+        text: "Months",
+      },
+    },
+    yAxis: {
+      title: {
+        text: "Income",
+      },
+    },
+    series: lineChartSeriesData,
+    tooltip: {
+      formatter: function () {
+        return `<b>${this.series.name}</b><br/>${this.x}: ${this.y}`;
+      },
+    },
+    credits: {
+      enabled: false,
+    },
+  };
+  const barChartSeriesData = Object.keys(monthlyIncomeData).map((year) => ({
+    name: year,
+    type: "column" as const, // Ensure type is 'line'
+    data: monthlyIncomeData[Number(year)],
+  }));
+  
+  const barChartOptions: Options = {
+    chart: {
+      type: "column",
+    },
+    title: {
+      text: "Monthly Income Comparison for the Last 5 Years",
+    },
+    xAxis: {
+      categories: [
+        "Jan", "Feb", "Mar", "Apr", "May", "Jun",
+        "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
+      ],
+      title: {
+        text: "Months",
+      },
+    },
+    yAxis: {
+      title: {
+        text: "Income",
+      },
+    },
+    series: barChartSeriesData,
+    tooltip: {
+      formatter: function () {
+        return `<b>${this.series.name}</b><br/>${this.x}: ${this.y}`;
+      },
+    },
+    credits: {
+      enabled: false,
+    },
+  };
+  const areaSplineChartOption:Options={
+
+  }
   return (
-    <div className="flex flex-col h-full ">
+    <div className="flex flex-col h-full">
       <Spinner
         text="Loading..."
         closedIn={15000}
@@ -236,31 +318,31 @@ const Dashboard: FC = () => {
         isVisible={isLoading}
       />
       <PageTitleBar title="Dashboard" />
-
-      <div className="overflow-y-auto">
+      <div className="overflow-y-auto w-full max-w-full">
         <div className="flex flex-wrap justify-around">
           <div className="w-full sm:w-1/1 md:w-1/2 lg:w-1/4 p-2">
-            <HighchartsReact highcharts={Highcharts} options={options1} />
+            <ChartComponent options={options1} />
           </div>
           <div className="w-full sm:w-1/1 md:w-1/2 lg:w-1/4 p-2">
-            <HighchartsReact highcharts={Highcharts} options={options2} />
+            <ChartComponent options={options2} />
           </div>
           <div className="w-full sm:w-1/1 md:w-1/2 lg:w-1/4 p-2">
-            <HighchartsReact
-              ref={donutChartRef1}
-              highcharts={Highcharts}
-              options={donutChartOptions1}
-            />
+            <ChartComponent options={donutChartOptions1} drawTotal={true} />
           </div>
           <div className="w-full sm:w-1/1 md:w-1/2 lg:w-1/4 p-2">
-            <HighchartsReact
-              ref={donutChartRef2}
-              highcharts={Highcharts}
-              options={donutChartOptions2}
-            />
+            <ChartComponent options={donutChartOptions2} drawTotal={true} />
           </div>
         </div>
-
+        <div className="flex ">
+          <div className="p-2 w-full">
+          <ChartComponent options={lineChartOptions}/>
+          </div>
+        </div>
+        <div className="flex ">
+          <div className="p-2 w-full">
+          <ChartComponent options={barChartOptions}/>
+          </div>
+        </div>
         <div className="flex flex-wrap justify-center items-center">
           <div className="w-full md:w-1/2 px-4">
             <h1 className="text-center">Locations Worldwide</h1>
