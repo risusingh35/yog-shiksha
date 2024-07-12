@@ -2,8 +2,9 @@ import PageTitleBar from "@/component/pageTitleBar/PageTitleBar";
 import Spinner from "@/component/spinner/Spinner";
 import { FC, useState, useEffect } from "react";
 import dynamic from "next/dynamic";
-import Highcharts, { Options } from "highcharts";
+import  { Options } from "highcharts";
 import ChartComponent from "@/component/highChart/ChartComponent";
+import AreasplineGraph from "@/component/highChart/AreasplineGraph";
 
 const WorldMapper = dynamic(() => import("@/component/mapper/WorldMapper"), {
   ssr: false,
@@ -319,6 +320,11 @@ const Dashboard: FC = () => {
       />
       <PageTitleBar title="Dashboard" />
       <div className="overflow-y-auto w-full max-w-full">
+      <div className="flex ">
+          <div className="p-2 w-full">
+          <AreasplineGraph/>
+          </div>
+        </div>
         <div className="flex flex-wrap justify-around">
           <div className="w-full sm:w-1/1 md:w-1/2 lg:w-1/4 p-2">
             <ChartComponent options={options1} />
@@ -343,6 +349,7 @@ const Dashboard: FC = () => {
           <ChartComponent options={barChartOptions}/>
           </div>
         </div>
+        
         <div className="flex flex-wrap justify-center items-center">
           <div className="w-full md:w-1/2 px-4">
             <h1 className="text-center">Locations Worldwide</h1>
