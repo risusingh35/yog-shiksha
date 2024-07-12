@@ -6,7 +6,6 @@ import HighchartsReact, {
   HighchartsReactRefObject,
 } from "highcharts-react-official";
 import dynamic from "next/dynamic";
-import MultipleCollapsibleSections from "@/component/collapsible/MultipleCollapsibleSections";
 
 const WorldMapper = dynamic(() => import("@/component/mapper/WorldMapper"), {
   ssr: false,
@@ -262,17 +261,15 @@ const Dashboard: FC = () => {
           </div>
         </div>
 
-        <div className="flex justify-center items-center flex-col">
-          <h1>Device Locations Worldwide</h1>
-          <WorldMapper />
-        </div>
-
-        <div className="flex justify-center items-center flex-col">
-          <h1>Device Locations in Indian States</h1>
-          <IndiaStateMapper />
-        </div>
-        <div>
-          <MultipleCollapsibleSections />
+        <div className="flex flex-wrap justify-center items-center">
+          <div className="w-full md:w-1/2 px-4">
+            <h1 className="text-center">Locations Worldwide</h1>
+            <WorldMapper />
+          </div>
+          <div className="w-full md:w-1/2 px-4">
+            <h1 className="text-center">Locations in Indian States</h1>
+            <IndiaStateMapper />
+          </div>
         </div>
       </div>
     </div>
