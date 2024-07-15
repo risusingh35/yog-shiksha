@@ -6,7 +6,7 @@ export const login = createAsyncThunk(
   async (loginPayload,{ rejectWithValue }) => {
     try {
       const response = await axios.post(
-        `/api/auth`,loginPayload
+        `/api/auth/login`,loginPayload
       );
       if (response.status === 200) {
         return response.data;
@@ -26,6 +26,7 @@ const initialState = {
   errorMessage: null,
   isAuth: false,
   token: null,
+  loggedInUser:null
 };
 
 const isAuthSlice = createSlice({
@@ -33,10 +34,11 @@ const isAuthSlice = createSlice({
   initialState,
   reducers: {
     setIsAuth: (state, action) => {
-      console.log({action});
+      // console.log({action});
       
       state.isAuth = action.payload.isAuth;
       state.token = action.payload.token;
+      state.loggedInUser = action.payload.loggedInUser;
     },
     resetIsAuth: (state) => {
       state.isAuth = false;
@@ -53,12 +55,14 @@ const isAuthSlice = createSlice({
         state.loading = false;
         state.isAuth = action.payload.isAuth;
         state.token = action.payload.token;
+        state.loggedInUser = action.payload.loggedInUser;
         state.errorMessage = null;
       })
       .addCase(login.rejected, (state, action:any) => {
         state.loading = false;
         state.isAuth = false;
         state.token = null;
+        state.loggedInUser = null;
         state.errorMessage = action.payload.errorMessage;
       });
   },

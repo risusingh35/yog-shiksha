@@ -64,7 +64,7 @@ const Users: FC = () => {
 
   const handleDeleteUser = async (userId: string) => {
     try {
-      const response = await axios.delete('/api/users', { data: { userId } });
+      const response = await axiosInstance.delete('/users', { data: { userId } });
 
       if (response.data.success) {
         toast.success('User deleted successfully', {
@@ -97,7 +97,7 @@ const Users: FC = () => {
   return (
     <div className="flex justify-center items-center flex-col h-full">
       <Spinner
-        text="Loading..."
+        text="Loading user list..."
         closedIn={125000}
         onClose={() => setIsLoading(false)}
         isVisible={isLoading}

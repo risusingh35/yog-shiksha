@@ -27,12 +27,13 @@ const Login = () => {
     setIsSubmitting(true);
     try {
       if (otpRequested) {
-        const response = await axios.post("/api/auth", {
+        const response = await axios.post("/api/auth/login", {
           enterOtp,
           encryptedOTP,
           loggedInUser,
         });
-        console.log("response:::;", response);
+        // console.log("response:::;", response);
+        // console.log("loggedInUser:::;", loggedInUser);
         if (response.status === 200) {
           toast.success(response.data.message, {
             position: "top-right",
@@ -47,7 +48,7 @@ const Login = () => {
           const isAuth = true;
           setLocalStorage("token", token);
           // login(token);
-          dispatch(setIsAuth({ isAuth, token }));
+          dispatch(setIsAuth({ isAuth, token,loggedInUser }));
           router.push("/");
         } else {
           console.error("Failed to authenticate:", response.data);
@@ -76,7 +77,7 @@ const Login = () => {
     try {
       setIsLoading(true);
       const response = await axios.post("/api/users/find-one", { email });
-      console.log("response-find-one", response);
+      // console.log("response-find-one", response);
       setLoggedInUser(response?.data?.user)
       setIsLoading(false);
       if (response.status === 200) {
