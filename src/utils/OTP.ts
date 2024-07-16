@@ -1,4 +1,4 @@
-import NextCrypto from 'next-crypto';
+    import NextCrypto from 'next-crypto';
 
 const encryptOTP = async (otp: string): Promise<string> => {
     return new Promise<string>(async (resolve, reject) => {

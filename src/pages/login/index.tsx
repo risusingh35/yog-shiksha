@@ -20,6 +20,7 @@ const Login = () => {
   const { isAuth, token } = useSelector((state: any) => state.auth);
   useEffect(() => {
     console.log({ isAuth, token });
+    clearCookie()
     dispatch(resetIsAuth());
   }, []);
   const handleLogin = async () => {
@@ -123,7 +124,9 @@ const Login = () => {
     setOtpRequested(false);
     router.push("/sign-up");
   };
-
+  const clearCookie = () => {
+    document.cookie = 'refreshToken=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT; HttpOnly; Secure; SameSite=Strict';
+  };
   return (
     <div className="flex justify-center items-center h-full">
       <Spinner

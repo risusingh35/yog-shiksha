@@ -30,7 +30,7 @@ const Footer: React.FC = () => {
   const formattedDateTime = currentDateTime ? currentDateTime.toLocaleString() : "";
 
   return (
-    <footer className="w-full max-w-full mt-5 bg-gray-300 fixed bottom-0 left-0">
+    <footer className="w-full max-w-full mt-2 bg-gray-300 fixed bottom-0 left-0">
       <div className="container mx-auto flex flex-col sm:flex-row items-center justify-between p-4">
         <div className="flex items-center justify-center md:justify-start text-gray-900 mb-4 sm:mb-0">
           <span className="text-xl font-medium">Risu Singh</span>

@@ -6,36 +6,35 @@ const JWT_SECRET = process.env.JWT_SECRET || "";
 const REFRESH_TOKEN_SECRET = process.env.REFRESH_TOKEN_SECRET || "";
 const message = "Your session/token has expired, please login again";
 
-export const authenticateToken =
-  (handler: NextApiHandler) =>
-  async (req: NextApiRequest, res: NextApiResponse) => {
-    const authHeader = req.headers["authorization"];
-    const cookies = parseCookies({ req });
-    if (!authHeader || !cookies.token) {
-      return res.status(401).json({ message: "Authorization header is missing" });
-    }
-   
-    const token = authHeader.split(" ")[1];
-    if (!token) {
-      console.error("Token is missing");
-      return res.status(401).json({ message: "Token is missing" });
+export const authenticateToken = (handler: NextApiHandler) => async (req: NextApiRequest, res: NextApiResponse) => {
+  const authHeader = req.headers["authorization"];
+  const cookies = parseCookies({ req });
+
+  if (!authHeader && !cookies.token && !cookies.refreshToken) {
+    return res.status(401).json({ message: "Authorization header is missing or token is missing in cookies" });
+  }
+
+  const token = authHeader?.split(" ")[1];
+
+  if (!token) {
+    console.error("Token is missing");
+    return res.status(401).json({ message: "Token is missing" });
+  }
+
+  try {
+    const decoded = jwt.verify(token, JWT_SECRET);
+    (req as any).user = decoded;
+    return handler(req, res);
+  } catch (error) {
+    const refreshToken = cookies.refreshToken;
+
+    if (!refreshToken) {
+      return res.status(401).json({ message: "Refresh token is missing" });
     }
 
-    try {
-      const decoded = jwt.verify(token, JWT_SECRET);
-      (req as any).user = decoded;
-      return handler(req, res);
-    } catch (error) {
-      const cookies = parseCookies({ req });
-      const refreshToken = cookies.refreshToken;
-
-      if (!refreshToken) {
-        return res.status(401).json({ message: "Refresh token is missing" });
-      }
-
-      return await handleRefreshToken(req, res, refreshToken, handler);
-    }
-  };
+    return await handleRefreshToken(req, res, refreshToken, handler);
+  }
+};
 
 const handleRefreshToken = async (
   req: NextApiRequest,
@@ -44,7 +43,7 @@ const handleRefreshToken = async (
   handler: NextApiHandler
 ) => {
   try {
-    const decodedRefreshToken:any = jwt.verify(refreshToken, REFRESH_TOKEN_SECRET);
+    const decodedRefreshToken: any = jwt.verify(refreshToken, REFRESH_TOKEN_SECRET);
     const newToken = jwt.sign(
       { id: decodedRefreshToken.id, email: decodedRefreshToken.email },
       JWT_SECRET,
