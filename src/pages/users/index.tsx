@@ -1,11 +1,11 @@
 import { useState, FC, useEffect, Fragment } from "react";
-import axios from "axios";
 import { toast } from "react-toastify";
 import Spinner from "@/component/spinner/Spinner";
 import { BsPencilSquare, BsTrash } from "react-icons/bs";
 import PageTitleBar from "@/component/pageTitleBar/PageTitleBar";
 import axiosInstance from "@/utils/axiosInstance";
 import { useRouter } from "next/router";
+import Pagination from "@/component/pagination/Pagination";
 
 interface User {
   _id: string;
@@ -27,14 +27,31 @@ interface User {
 const Users: FC = () => {
   const [users, setUsers] = useState<User[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [pageLimit, setPageLimit] = useState(10);
+  const [searchText, setSearchText] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalUsersCount, setTotalUsersCount] = useState(1);
   const router = useRouter();
-
+  interface getQueryParam {
+    searchText?: string;
+    pageLimit: number;
+    currentPage: number;
+  }
   const getAllUsers = async () => {
     try {
       setIsLoading(true);
-      const response = await axiosInstance.get("/users");
+      let url = "/users";
+      const params:getQueryParam = {
+        currentPage,
+        pageLimit,
+      };
+      if (searchText) {
+        params.searchText = searchText;
+      }
+      const response = await axiosInstance.get(url, { params });
       console.log({ response });
-      setUsers(response.data.data);
+      setUsers(response.data.users);
+      setTotalUsersCount(response.data.totalCount);
     } catch (error: any) {
       toast.error(error?.response?.data?.message || "Failed to fetch users", {
         position: "top-right",
@@ -56,7 +73,7 @@ const Users: FC = () => {
 
   useEffect(() => {
     getAllUsers();
-  }, []);
+  }, [pageLimit,searchText,currentPage]);
 
   const handleEditUser = (userId: string) => {
     console.log("Edit user:", userId);
@@ -64,10 +81,12 @@ const Users: FC = () => {
 
   const handleDeleteUser = async (userId: string) => {
     try {
-      const response = await axiosInstance.delete('/users', { data: { userId } });
+      const response = await axiosInstance.delete("/users", {
+        data: { userId },
+      });
 
       if (response.data.success) {
-        toast.success('User deleted successfully', {
+        toast.success("User deleted successfully", {
           position: "top-right",
           autoClose: 5000,
           hideProgressBar: false,
@@ -76,9 +95,9 @@ const Users: FC = () => {
           draggable: true,
           progress: undefined,
         });
-        setUsers(users.filter(user => user._id !== userId));
+        setUsers(users.filter((user) => user._id !== userId));
       } else {
-        throw new Error('Failed to delete user');
+        throw new Error("Failed to delete user");
       }
     } catch (error: any) {
       toast.error(error?.response?.data?.error || "Failed to delete user", {
@@ -93,7 +112,18 @@ const Users: FC = () => {
       console.error("Failed to delete user:", error);
     }
   };
-
+  const performSearch = (query: string) => {
+    setSearchText(query);
+    console.log("Searching for:", query);
+  };
+  const onLimitChange = (limit: number) => {
+    setPageLimit(limit);
+    setCurrentPage(1);
+    console.log("onLimitChange for:", limit);
+  };
+  const handlePageChange = (pageNumber: number) => {
+    setCurrentPage(pageNumber);
+  };
   return (
     <div className="flex justify-center items-center flex-col h-full">
       <Spinner
@@ -102,10 +132,19 @@ const Users: FC = () => {
         onClose={() => setIsLoading(false)}
         isVisible={isLoading}
       />
-      <PageTitleBar title="Users" />
+      <PageTitleBar
+        title="Users"
+     
+        performSearch={performSearch}
+        searchDelay={800}
+        searchPlaceholder="Search Users"
+      />
       {users.length > 0 ? (
         <div className="w-full max-w-full bg-white shadow-md">
-          <div className="overflow-y-auto" style={{ maxHeight: 'calc(100vh - 200px)' }}>
+          <div
+            className="overflow-y-auto"
+            style={{ maxHeight: "calc(100vh - 229px)" }}
+          >
             <table className="w-full">
               <thead className="bg-gray-100 border-b">
                 <tr>
@@ -113,7 +152,9 @@ const Users: FC = () => {
                   <th className="text-left py-2 px-3 border-r">Name</th>
                   <th className="text-left py-2 px-3 border-r">Contact</th>
                   <th className="text-center py-2 px-3 border-r">Status</th>
-                  <th className="text-center py-2 px-3 border-r">Subscription</th>
+                  <th className="text-center py-2 px-3 border-r">
+                    Subscription
+                  </th>
                   <th className="text-center py-2 px-3">Actions</th>
                 </tr>
               </thead>
@@ -162,6 +203,14 @@ const Users: FC = () => {
       ) : (
         <p>No users found.</p>
       )}
+      <Pagination
+        totalPage={ Math.ceil(totalUsersCount / pageLimit)}
+        currentPage={currentPage}
+        onPageChange={handlePageChange}
+        pageLimit={pageLimit}
+        onLimitChange={onLimitChange}
+        totalItem={totalUsersCount+' Users'}
+      />
     </div>
   );
 };

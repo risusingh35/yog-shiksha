@@ -1,15 +1,31 @@
-import { FC, useEffect } from "react";
+import React, { FC, useState, useEffect, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { FaCog, FaSignOutAlt } from "react-icons/fa";
 import { useRouter } from "next/router";
+import debounce from "lodash/debounce";
+
 interface PageTitleBarProps {
   title: string;
+  searchDelay?: number;
+  minSearchChars?: number;
+  searchPlaceholder?: string;
+  performSearch: (query: string) => void;
 }
 
-const PageTitleBar: FC<PageTitleBarProps> = ({ title }) => {
+const PageTitleBar: FC<PageTitleBarProps> = ({
+  title,
+  searchDelay = 500,
+  minSearchChars = 3,
+  searchPlaceholder = "Search...",
+  performSearch,
+
+}) => {
   const { isAuth, loggedInUser } = useSelector((state: any) => state.auth);
   const dispatch = useDispatch();
   const router = useRouter();
+  const [searchTerm, setSearchTerm] = useState("");
+
+
   useEffect(() => {
     if (isAuth) {
       console.log({ loggedInUser });
@@ -21,8 +37,12 @@ const PageTitleBar: FC<PageTitleBarProps> = ({ title }) => {
   };
 
   const handleLogout = () => {
-    alert("LOGOUT");
-    dispatch({ type: "LOGOUT" });
+    if (confirm("Are you sure to logout")) {
+      router.push("/login");
+      dispatch({ type: "LOGOUT" });
+    } else {
+      console.log("Not log out");
+    }
   };
 
   const handleSettings = () => {
@@ -30,13 +50,42 @@ const PageTitleBar: FC<PageTitleBarProps> = ({ title }) => {
     // router.push('/settings');
   };
 
+  const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const value = event.target.value;
+    setSearchTerm(value);
+    if (value.length >= minSearchChars ||!value.length ) {
+      debouncedSearch(value); 
+    }
+  };
+
+ 
+
+  const debouncedSearch = useCallback(
+    debounce((query) => performSearch(query), searchDelay),
+    [performSearch, searchDelay]
+  );
+
   return (
-    <div className="flex flex-row w-full text-3xl bg-gray-900 text-white px-4 py-3 items-center justify-between border-b border-l border-l-white">
-      <div>{title}</div>
+    <div className="flex flex-row w-full text-3xl bg-gray-900 text-white px-4 mx-4 py-3 items-center justify-between border-b border-l border-l-white">
+      <div className="flex flex-row items-center">
+        <div className="p-2.5 text-2xl">{title}</div>
+        <div className="p-2.5 flex items-center rounded-md px-4 duration-300 cursor-pointer bg-gray-700 text-white ml-4">
+          <input
+            type="text"
+            placeholder={searchPlaceholder}
+            className="text-[12px] ml-1 bg-transparent focus:outline-none w-72 "
+            value={searchTerm}
+            onChange={handleSearchChange}
+            style={{ height: "24px" }}
+          />
+        </div>
+      
+      </div>
       <div>
         {isAuth && loggedInUser && (
           <div className="relative group size-12 rounded-full bg-[#FF9900] flex items-center justify-center">
-            {loggedInUser.profilePhoto && loggedInUser.profilePhoto.data.length > 1 ? (
+            {loggedInUser.profilePhoto &&
+            loggedInUser.profilePhoto.data.length > 1 ? (
               <img
                 src={`data:image/png;base64,${Buffer.from(
                   loggedInUser.profilePhoto.data
@@ -75,7 +124,6 @@ const PageTitleBar: FC<PageTitleBarProps> = ({ title }) => {
       </div>
     </div>
   );
-  
 };
 
 export default PageTitleBar;
