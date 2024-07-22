@@ -6,10 +6,13 @@ import debounce from "lodash/debounce";
 
 interface PageTitleBarProps {
   title: string;
+  btnText: string;
   searchDelay?: number;
   minSearchChars?: number;
   searchPlaceholder?: string;
-  performSearch: (query: string) => void;
+  isSearchVisible?: boolean;
+  performSearch?: (query: string) => void;
+  handleBtnClick?: () => void;
 }
 
 const PageTitleBar: FC<PageTitleBarProps> = ({
@@ -18,13 +21,14 @@ const PageTitleBar: FC<PageTitleBarProps> = ({
   minSearchChars = 3,
   searchPlaceholder = "Search...",
   performSearch,
-
+  handleBtnClick,
+  btnText,
+  isSearchVisible = true,
 }) => {
   const { isAuth, loggedInUser } = useSelector((state: any) => state.auth);
   const dispatch = useDispatch();
   const router = useRouter();
   const [searchTerm, setSearchTerm] = useState("");
-
 
   useEffect(() => {
     if (isAuth) {
@@ -53,15 +57,14 @@ const PageTitleBar: FC<PageTitleBarProps> = ({
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value;
     setSearchTerm(value);
-    if (value.length >= minSearchChars ||!value.length ) {
-      debouncedSearch(value); 
+    if (value.length >= minSearchChars || !value.length) {
+      console.log(value,'val',typeof value)
+      debouncedSearch(value);
     }
   };
 
- 
-
   const debouncedSearch = useCallback(
-    debounce((query) => performSearch(query), searchDelay),
+    debounce((query) => performSearch(query || ''), searchDelay),
     [performSearch, searchDelay]
   );
 
@@ -69,58 +72,69 @@ const PageTitleBar: FC<PageTitleBarProps> = ({
     <div className="flex flex-row w-full text-3xl bg-gray-900 text-white px-4 mx-4 py-3 items-center justify-between border-b border-l border-l-white">
       <div className="flex flex-row items-center">
         <div className="p-2.5 text-2xl">{title}</div>
-        <div className="p-2.5 flex items-center rounded-md px-4 duration-300 cursor-pointer bg-gray-700 text-white ml-4">
-          <input
-            type="text"
-            placeholder={searchPlaceholder}
-            className="text-[12px] ml-1 bg-transparent focus:outline-none w-72 "
-            value={searchTerm}
-            onChange={handleSearchChange}
-            style={{ height: "24px" }}
-          />
-        </div>
-      
-      </div>
-      <div>
-        {isAuth && loggedInUser && (
-          <div className="relative group size-12 rounded-full bg-[#FF9900] flex items-center justify-center">
-            {loggedInUser.profilePhoto &&
-            loggedInUser.profilePhoto.data.length > 1 ? (
-              <img
-                src={`data:image/png;base64,${Buffer.from(
-                  loggedInUser.profilePhoto.data
-                ).toString("base64")}`}
-                alt="Profile"
-                className="cursor-pointer rounded-full"
-              />
-            ) : (
-              <div className="flex items-center justify-center cursor-pointer rounded-full">
-                <span className="text-xl">
-                  {getUserInitials(
-                    loggedInUser.firstName,
-                    loggedInUser.lastName
-                  )}
-                </span>
-              </div>
-            )}
-            <div className="hidden group-hover:block absolute right-0 mt-0 w-48 bg-gray-700 text-black rounded shadow-lg z-10 flex flex-col items-start text-white text-3xl cursor-pointer">
-              <div
-                onClick={handleLogout}
-                className="flex items-center hover:bg-blue-600 px-2 py-1 duration-300 cursor-pointer w-full rounded-t"
-              >
-                <FaSignOutAlt className="mr-2" />
-                <span className="text-[15px]">Logout</span>
-              </div>
-              <div
-                onClick={handleSettings}
-                className="flex items-center hover:bg-blue-600 px-2 py-1 duration-300 cursor-pointer w-full rounded-b"
-              >
-                <FaCog className="mr-2" />
-                <span className="text-[15px]">Settings</span>
-              </div>
-            </div>
+        {isSearchVisible && (
+          <div className="p-2.5 flex items-center rounded-md px-4 duration-300 cursor-pointer bg-gray-700 text-white ml-4">
+            <input
+              type="text"
+              placeholder={searchPlaceholder}
+              className="text-[12px] ml-1 bg-transparent focus:outline-none w-72 "
+              value={searchTerm}
+              onChange={handleSearchChange}
+              style={{ height: "24px" }}
+            />
           </div>
         )}
+      </div>
+      <div className="flex items-center">
+        <div className="flex items-center rounded-md duration-300 cursor-pointer bg-blue-500  text-white mr-3">
+          <button
+            className="rounded-lg flex items-center mx-2 my-1 text-xl"
+            onClick={handleBtnClick}
+          >
+            {btnText}
+          </button>
+        </div>
+        <div>
+          {isAuth && loggedInUser && (
+            <div className="relative group size-12 rounded-full bg-[#FF9900] flex items-center justify-center">
+              {loggedInUser.profilePhoto &&
+              loggedInUser.profilePhoto.data.length > 1 ? (
+                <img
+                  src={`data:image/png;base64,${Buffer.from(
+                    loggedInUser.profilePhoto.data
+                  ).toString("base64")}`}
+                  alt="Profile"
+                  className="cursor-pointer rounded-full"
+                />
+              ) : (
+                <div className="flex items-center justify-center cursor-pointer rounded-full">
+                  <span className="text-xl">
+                    {getUserInitials(
+                      loggedInUser.firstName,
+                      loggedInUser.lastName
+                    )}
+                  </span>
+                </div>
+              )}
+              <div className="hidden group-hover:block absolute right-0 mt-0 w-48 bg-gray-700 text-black rounded shadow-lg z-10 flex flex-col items-start text-white text-3xl cursor-pointer">
+                <div
+                  onClick={handleLogout}
+                  className="flex items-center hover:bg-blue-600 px-2 py-1 duration-300 cursor-pointer w-full rounded-t"
+                >
+                  <FaSignOutAlt className="mr-2" />
+                  <span className="text-[15px]">Logout</span>
+                </div>
+                <div
+                  onClick={handleSettings}
+                  className="flex items-center hover:bg-blue-600 px-2 py-1 duration-300 cursor-pointer w-full rounded-b"
+                >
+                  <FaCog className="mr-2" />
+                  <span className="text-[15px]">Settings</span>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

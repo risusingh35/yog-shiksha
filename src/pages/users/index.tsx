@@ -41,7 +41,7 @@ const Users: FC = () => {
     try {
       setIsLoading(true);
       let url = "/users";
-      const params:getQueryParam = {
+      const params: getQueryParam = {
         currentPage,
         pageLimit,
       };
@@ -73,11 +73,11 @@ const Users: FC = () => {
 
   useEffect(() => {
     getAllUsers();
-  }, [pageLimit,searchText,currentPage]);
+  }, [pageLimit, searchText, currentPage]);
 
-  const handleEditUser = (userId: string) => {
-    console.log("Edit user:", userId);
-  };
+  // const handleEditUser = (userId: string) => {
+  //   console.log("Edit user:", userId);
+  // };
 
   const handleDeleteUser = async (userId: string) => {
     try {
@@ -124,6 +124,13 @@ const Users: FC = () => {
   const handlePageChange = (pageNumber: number) => {
     setCurrentPage(pageNumber);
   };
+  const handleAddEditClick = (id: string | null = null) => {
+    router.push({
+        pathname: '/users/add-edit',
+        query: { id: id }
+    });
+};
+
   return (
     <div className="flex justify-center items-center flex-col h-full">
       <Spinner
@@ -134,83 +141,86 @@ const Users: FC = () => {
       />
       <PageTitleBar
         title="Users"
-     
+        btnText="Create User"
         performSearch={performSearch}
+        handleBtnClick={handleAddEditClick}
         searchDelay={800}
         searchPlaceholder="Search Users"
       />
       {users.length > 0 ? (
-        <div className="w-full max-w-full bg-white shadow-md">
-          <div
-            className="overflow-y-auto"
-            style={{ maxHeight: "calc(100vh - 229px)" }}
-          >
-            <table className="w-full">
-              <thead className="bg-gray-100 border-b">
-                <tr>
-                  <th className="text-left py-2 px-3 border-r">Email</th>
-                  <th className="text-left py-2 px-3 border-r">Name</th>
-                  <th className="text-left py-2 px-3 border-r">Contact</th>
-                  <th className="text-center py-2 px-3 border-r">Status</th>
-                  <th className="text-center py-2 px-3 border-r">
-                    Subscription
-                  </th>
-                  <th className="text-center py-2 px-3">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {users.map((user) => (
-                  <Fragment key={user._id}>
-                    <tr className="border-b hover:bg-gray-50">
-                      <td className="py-2 px-3 border-r">{user.email}</td>
-                      <td className="py-2 px-3 border-r">{`${user.firstName} ${user.lastName}`}</td>
-                      <td className="py-2 px-3 border-r">{user.contact}</td>
-                      <td className="py-2 px-3 border-r text-center">
-                        {user.isActive ? (
-                          <span className="inline-block w-4 h-4 rounded-full bg-green-500"></span>
-                        ) : (
-                          <span className="inline-block w-4 h-4 rounded-full bg-red-500"></span>
-                        )}
-                      </td>
-                      <td className="py-2 px-3 border-r text-center">
-                        {user.isActiveSubscription ? (
-                          <span className="inline-block w-4 h-4 rounded-full bg-green-500"></span>
-                        ) : (
-                          <span className="inline-block w-4 h-4 rounded-full bg-gray-400"></span>
-                        )}
-                      </td>
-                      <td className="py-2 px-3 flex justify-center items-center space-x-2">
-                        <button
-                          onClick={() => handleEditUser(user._id)}
-                          className="text-blue-500 hover:text-blue-700"
-                        >
-                          <BsPencilSquare className="h-5 w-5" />
-                        </button>
-                        <button
-                          onClick={() => handleDeleteUser(user._id)}
-                          className="text-red-500 hover:text-red-700"
-                        >
-                          <BsTrash className="h-5 w-5" />
-                        </button>
-                      </td>
-                    </tr>
-                  </Fragment>
-                ))}
-              </tbody>
-            </table>
+        <>
+          <div className="w-full max-w-full bg-white shadow-md">
+            <div
+              className="overflow-y-auto"
+              style={{ maxHeight: "calc(100vh - 229px)" }}
+            >
+              <table className="w-full">
+                <thead className="bg-gray-100 border-b">
+                  <tr>
+                    <th className="text-left py-2 px-3 border-r">Email</th>
+                    <th className="text-left py-2 px-3 border-r">Name</th>
+                    <th className="text-left py-2 px-3 border-r">Contact</th>
+                    <th className="text-center py-2 px-3 border-r">Status</th>
+                    <th className="text-center py-2 px-3 border-r">
+                      Subscription
+                    </th>
+                    <th className="text-center py-2 px-3">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {users.map((user) => (
+                    <Fragment key={user._id}>
+                      <tr className="border-b hover:bg-gray-50">
+                        <td className="py-2 px-3 border-r">{user.email}</td>
+                        <td className="py-2 px-3 border-r">{`${user.firstName} ${user.lastName}`}</td>
+                        <td className="py-2 px-3 border-r">{user.contact}</td>
+                        <td className="py-2 px-3 border-r text-center">
+                          {user.isActive ? (
+                            <span className="inline-block w-4 h-4 rounded-full bg-green-500"></span>
+                          ) : (
+                            <span className="inline-block w-4 h-4 rounded-full bg-red-500"></span>
+                          )}
+                        </td>
+                        <td className="py-2 px-3 border-r text-center">
+                          {user.isActiveSubscription ? (
+                            <span className="inline-block w-4 h-4 rounded-full bg-green-500"></span>
+                          ) : (
+                            <span className="inline-block w-4 h-4 rounded-full bg-gray-400"></span>
+                          )}
+                        </td>
+                        <td className="py-2 px-3 flex justify-center items-center space-x-2">
+                          <button
+                            onClick={() => handleAddEditClick(user._id)}
+                            className="text-blue-500 hover:text-blue-700"
+                          >
+                            <BsPencilSquare className="h-5 w-5" />
+                          </button>
+                          <button
+                            onClick={() => handleDeleteUser(user._id)}
+                            className="text-red-500 hover:text-red-700"
+                          >
+                            <BsTrash className="h-5 w-5" />
+                          </button>
+                        </td>
+                      </tr>
+                    </Fragment>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
-        </div>
+          <Pagination
+            totalPage={Math.ceil(totalUsersCount / pageLimit)}
+            currentPage={currentPage}
+            onPageChange={handlePageChange}
+            pageLimit={pageLimit}
+            onLimitChange={onLimitChange}
+            totalItem={totalUsersCount + " Users"}
+          />
+        </>
       ) : (
         <p>No users found.</p>
       )}
-      <Pagination
-        totalPage={ Math.ceil(totalUsersCount / pageLimit)}
-        currentPage={currentPage}
-        onPageChange={handlePageChange}
-        pageLimit={pageLimit}
-        onLimitChange={onLimitChange}
-        totalItem={totalUsersCount+' Users'}
-      />
     </div>
   );
 };

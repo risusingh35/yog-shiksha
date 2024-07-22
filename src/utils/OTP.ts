@@ -20,6 +20,8 @@ const decryptOTP = async (text: string): Promise<string|null> => {
             let key:string =process.env.OTP_SECRET_KEY||''
             const crypto = new NextCrypto(key);
             const decrypted = await crypto.decrypt(text);
+            console.log({decrypted});
+            
             resolve(decrypted);
         } catch (error) {
             console.error('Error decrypting OTP:', error);
@@ -38,8 +40,11 @@ const generateOTP = async (length: number = 6): Promise<string> => {
 };
 
 const verifyOTP = async (enterOtp: string, encryptedOTP: string): Promise<boolean> => {
+    console.log({enterOtp});
+    console.log({encryptedOTP});
     try {
         const decryptedEnterOtp = await decryptOTP(encryptedOTP);
+        console.log({decryptedEnterOtp});
         const isValid = enterOtp === decryptedEnterOtp;
         return isValid;
     } catch (error) {

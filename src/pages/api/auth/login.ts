@@ -6,15 +6,20 @@ import { setCookie } from "nookies";
 const JWT_SECRET = process.env.JWT_SECRET || "";
 const REFRESH_TOKEN_SECRET = process.env.REFRESH_TOKEN_SECRET || "";
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse
+) {
   if (req.method !== "POST") {
     return res.status(405).json({ message: "Method not allowed" });
   }
-
+  
   const { enterOtp, encryptedOTP, loggedInUser } = req.body;
+  
 
   try {
     const isOTPValid = await verifyOTP(enterOtp, encryptedOTP);
+    console.log({ isOTPValid });
 
     if (isOTPValid) {
       const token = jwt.sign(

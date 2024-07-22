@@ -9,7 +9,7 @@ interface Address {
   pinCode: string;
 }
 
-interface IUser extends Document {
+export interface IUser extends Document {
   email: string;
   firstName: string;
   lastName: string;

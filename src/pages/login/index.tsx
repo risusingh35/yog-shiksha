@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 import Spinner from "@/component/spinner/Spinner";
 import { setLocalStorage } from "@/utils/loaclStorageService";
 import { setIsAuth, resetIsAuth } from "@/reduxStore/Slice/isAuthSlice";
-import { toast } from 'react-toastify';
+import { toast } from "react-toastify";
 
 const Login = () => {
   const [email, setEmail] = useState("");
@@ -20,7 +20,7 @@ const Login = () => {
   const { isAuth, token } = useSelector((state: any) => state.auth);
   useEffect(() => {
     console.log({ isAuth, token });
-    clearCookie()
+    clearCookie();
     dispatch(resetIsAuth());
   }, []);
   const handleLogin = async () => {
@@ -28,6 +28,12 @@ const Login = () => {
     setIsSubmitting(true);
     try {
       if (otpRequested) {
+        console.log(
+        {  enterOtp,
+          encryptedOTP,
+          loggedInUser}
+        );
+
         const response = await axios.post("/api/auth/login", {
           enterOtp,
           encryptedOTP,
@@ -49,7 +55,7 @@ const Login = () => {
           const isAuth = true;
           setLocalStorage("token", token);
           // login(token);
-          dispatch(setIsAuth({ isAuth, token,loggedInUser }));
+          dispatch(setIsAuth({ isAuth, token, loggedInUser }));
           router.push("/");
         } else {
           console.error("Failed to authenticate:", response.data);
@@ -79,7 +85,7 @@ const Login = () => {
       setIsLoading(true);
       const response = await axios.post("/api/users/find-one", { email });
       // console.log("response-find-one", response);
-      setLoggedInUser(response?.data?.user)
+      setLoggedInUser(response?.data?.user);
       setIsLoading(false);
       if (response.status === 200) {
         toast.success(response.data.message, {
@@ -92,7 +98,8 @@ const Login = () => {
           progress: undefined,
         });
         setOtpRequested(true);
-        setEncryptedOTP(response.data.encryptOTP);
+        setEncryptedOTP(response.data.encryptedOTP);
+        console.log("response.data", response.data);
       } else {
         toast.error(response.data.message, {
           position: "top-right",
@@ -115,7 +122,7 @@ const Login = () => {
         draggable: true,
         progress: undefined,
       });
-      setIsLoading(false)
+      setIsLoading(false);
       console.error("Failed to send OTP:", error);
     }
   };
@@ -125,7 +132,8 @@ const Login = () => {
     router.push("/sign-up");
   };
   const clearCookie = () => {
-    document.cookie = 'refreshToken=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT; HttpOnly; Secure; SameSite=Strict';
+    document.cookie =
+      "refreshToken=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT; HttpOnly; Secure; SameSite=Strict";
   };
   return (
     <div className="flex justify-center items-center h-full">
