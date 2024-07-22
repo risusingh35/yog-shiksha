@@ -54,31 +54,31 @@ const AddEditRole = () => {
       return [];
     }
   }, [formData.department]);
-  const filteredRoleLevelOptions = useMemo(() => {
-    switch (formData.department) {
-      case "user":
-        return ROLE_LEVEL_OPTIONS.filter((level) => level.id === 0);
-      case "developer":
-        return ROLE_LEVEL_OPTIONS.filter((level) => {
-          switch (formData.roleName) {
-            case "developer_intern":
-              return level.id === 0;
-            case "developer_junior":
-              return level.id === 2;
-            case "developer_senior":
-              return level.id === 4;
-            case "developer_tl":
-              return level.id === 5;
-            case "developer_mp":
-              return level.id === 6;
-            default:
-              return level.id === 0;
-          }
-        });
-      default:
-        return ROLE_LEVEL_OPTIONS;
-    }
-  }, [formData.roleName, formData.department]);
+  // const filteredRoleLevelOptions = useMemo(() => {
+  //   switch (formData.department) {
+  //     case "user":
+  //       return ROLE_LEVEL_OPTIONS.filter((level) => level.id === 0);
+  //     case "developer":
+  //       return ROLE_LEVEL_OPTIONS.filter((level) => {
+  //         switch (formData.roleName) {
+  //           case "developer_intern":
+  //             return level.id === 0;
+  //           case "developer_junior":
+  //             return level.id === 2;
+  //           case "developer_senior":
+  //             return level.id === 4;
+  //           case "developer_tl":
+  //             return level.id === 5;
+  //           case "developer_mp":
+  //             return level.id === 6;
+  //           default:
+  //             return level.id === 0;
+  //         }
+  //       });
+  //     default:
+  //       return ROLE_LEVEL_OPTIONS;
+  //   }
+  // }, [formData.roleName, formData.department]);
 
   const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -92,6 +92,7 @@ const AddEditRole = () => {
     e.preventDefault();
     try {
       let response;
+      console.log({formData});
       if (id) {
         // Update role
         response = await axiosInstance.put("/roles", {
@@ -103,8 +104,6 @@ const AddEditRole = () => {
           toast.success("Role updated successfully!");
         }
       } else {
-        // Create new role
-        console.log({ formData });
         response = await axiosInstance.post("/roles", {
           ...formData,
           loggedInUserId: loggedInUser?._id,
@@ -162,7 +161,7 @@ const AddEditRole = () => {
                 name="roleLevel"
                 value={formData.roleLevel}
                 onChange={handleChange}
-                options={filteredRoleLevelOptions}
+                options={ROLE_LEVEL_OPTIONS}
                 valueKey="key"
                 labelKey="value"
               />

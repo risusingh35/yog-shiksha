@@ -6,9 +6,14 @@ import PageTitleBar from "@/component/pageTitleBar/PageTitleBar";
 import axiosInstance from "@/utils/axiosInstance";
 import { useRouter } from "next/router";
 import Pagination from "@/component/pagination/Pagination";
-
+import {
+  DEPARTMENTS_NAME_OPTIONS,
+  ROLE_NAME_OPTIONS,
+  ROLE_LEVEL_OPTIONS,
+} from "@/constants/selectOptions";
 interface Role {
   _id: string;
+  department: string;
   roleName: string;
   roleLevel: string;
   createdBy: string;
@@ -122,7 +127,21 @@ const Roles: FC = () => {
       query: { id: id },
     });
   };
-
+  const filterDepartmentsName = (value: string) => {
+    return DEPARTMENTS_NAME_OPTIONS.filter(
+      (department) => department.key == value
+    )[0].value;
+  };
+  const filterRoleName = (value: string) => {
+    return ROLE_NAME_OPTIONS.filter(
+      (roleName) => roleName.key == value
+    )[0]?.value;
+  };
+  const filterRoleLevelName = (value: string) => {
+    return ROLE_LEVEL_OPTIONS.filter(
+      (roleLevel) => roleLevel.key == value
+    )[0]?.value;
+  };
   return (
     <div className="flex justify-center items-center flex-col h-full">
       <Spinner
@@ -149,6 +168,7 @@ const Roles: FC = () => {
               <table className="w-full">
                 <thead className="bg-gray-100 border-b">
                   <tr>
+                    <th className="text-left py-2 px-3 border-r">Department</th>
                     <th className="text-left py-2 px-3 border-r">Role Name</th>
                     <th className="text-left py-2 px-3 border-r">Role Level</th>
                     <th className="text-left py-2 px-3 border-r">Created By</th>
@@ -161,8 +181,14 @@ const Roles: FC = () => {
                   {roles.map((role) => (
                     <Fragment key={role._id}>
                       <tr className="border-b hover:bg-gray-50">
-                        <td className="py-2 px-3 border-r">{role.roleName}</td>
-                        <td className="py-2 px-3 border-r">{role.roleLevel}</td>
+                        <td className="py-2 px-3 border-r">
+                          {filterDepartmentsName(role.department)}
+                        </td>
+                        <td className="py-2 px-3 border-r">
+                        {filterRoleName(role.roleName)}
+                        </td>
+                        <td className="py-2 px-3 border-r">
+                        {filterRoleLevelName(role.roleLevel)}</td>
                         <td className="py-2 px-3 border-r">{role.createdBy}</td>
                         <td className="py-2 px-3 border-r">{role.updatedBy}</td>
                         <td className="py-2 px-3 border-r text-center">

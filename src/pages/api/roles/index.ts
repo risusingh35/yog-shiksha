@@ -143,8 +143,9 @@ const handlePostRequest = async (req: NextApiRequest, res: NextApiResponse) => {
 };
 
 // Handle PUT requests
-const handlePutRequest = async (req:NextApiRequest,res: NextApiResponse) => {
-  const { roleName, department, roleLevel, updatedBy, id } = req.body;
+const handlePutRequest = async (req: NextApiRequest, res: NextApiResponse) => {
+  const { roleName, department, roleLevel, loggedInUserId, id } = req.body;
+  console.log({ roleName, department, roleLevel, loggedInUserId, id });
 
   if (!id) {
     return res
@@ -155,7 +156,7 @@ const handlePutRequest = async (req:NextApiRequest,res: NextApiResponse) => {
   try {
     const updatedRole = await Role.findByIdAndUpdate(
       id,
-      { roleName, department, roleLevel, updatedBy },
+      { roleName, department, roleLevel, updatedBy: loggedInUserId },
       { new: true }
     );
 
@@ -176,8 +177,8 @@ const handleDeleteRequest = async (
   res: NextApiResponse
 ) => {
   const { id } = req.query;
-  console.log({id});
-  
+  console.log({ id });
+
   if (!id) {
     return res
       .status(400)
