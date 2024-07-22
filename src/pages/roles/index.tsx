@@ -7,40 +7,34 @@ import axiosInstance from "@/utils/axiosInstance";
 import { useRouter } from "next/router";
 import Pagination from "@/component/pagination/Pagination";
 
-interface User {
+interface Role {
   _id: string;
-  email: string;
-  firstName: string;
-  lastName: string;
-  contact: string;
-  address: {
-    country: string;
-    state: string;
-    city: string;
-    _id: string;
-  };
-  isActive: boolean;
-  isActiveSubscription: boolean;
-  __v: number;
+  roleName: string;
+  roleLevel: string;
+  createdBy: string;
+  updatedBy: string;
+  isDeleted: boolean;
 }
 
-const Users: FC = () => {
-  const [users, setUsers] = useState<User[]>([]);
+const Roles: FC = () => {
+  const [roles, setRoles] = useState<Role[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [pageLimit, setPageLimit] = useState(10);
   const [searchText, setSearchText] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const [totalUsersCount, setTotalUsersCount] = useState(1);
+  const [totalRolesCount, setTotalRolesCount] = useState(1);
   const router = useRouter();
+
   interface getQueryParam {
     searchText?: string;
     pageLimit: number;
     currentPage: number;
   }
-  const getAllUsers = async () => {
+
+  const getAllRoles = async () => {
     try {
       setIsLoading(true);
-      let url = "/users";
+      let url = "/roles";
       const params: getQueryParam = {
         currentPage,
         pageLimit,
@@ -50,10 +44,10 @@ const Users: FC = () => {
       }
       const response = await axiosInstance.get(url, { params });
       console.log({ response });
-      setUsers(response.data.users);
-      setTotalUsersCount(response.data.totalCount);
+      setRoles(response.data.roles);
+      setTotalRolesCount(response.data.totalCount);
     } catch (error: any) {
-      toast.error(error?.response?.data?.message || "Failed to fetch users", {
+      toast.error(error?.response?.data?.message || "Failed to fetch roles", {
         position: "top-right",
         autoClose: 15000,
         hideProgressBar: false,
@@ -65,26 +59,22 @@ const Users: FC = () => {
       if (error?.response?.status === 403) {
         router.push("/login");
       }
-      console.error("Failed to get Users list:", error);
+      console.error("Failed to get Roles list:", error);
     } finally {
       setIsLoading(false);
     }
   };
 
   useEffect(() => {
-    getAllUsers();
+    getAllRoles();
   }, [pageLimit, searchText, currentPage]);
 
-  // const handleEditUser = (userId: string) => {
-  //   console.log("Edit user:", userId);
-  // };
-
-  const handleDeleteUser = async (userId: string) => {
+  const handleDeleteRole = async (roleId: string) => {
     try {
-      const response = await axiosInstance.delete(`/users?id=${userId}`);
+      const response = await axiosInstance.delete(`/roles?id=${roleId}`);
 
       if (response.data.success) {
-        toast.success("User deleted successfully", {
+        toast.success("Role deleted successfully", {
           position: "top-right",
           autoClose: 5000,
           hideProgressBar: false,
@@ -93,12 +83,12 @@ const Users: FC = () => {
           draggable: true,
           progress: undefined,
         });
-        getAllUsers();
+        setRoles(roles.filter((role) => role._id !== roleId));
       } else {
-        throw new Error("Failed to delete user");
+        throw new Error("Failed to delete role");
       }
     } catch (error: any) {
-      toast.error(error?.response?.data?.error || "Failed to delete user", {
+      toast.error(error?.response?.data?.error || "Failed to delete role", {
         position: "top-right",
         autoClose: 5000,
         hideProgressBar: false,
@@ -107,45 +97,49 @@ const Users: FC = () => {
         draggable: true,
         progress: undefined,
       });
-      console.error("Failed to delete user:", error);
+      console.error("Failed to delete role:", error);
     }
   };
+
   const performSearch = (query: string) => {
     setSearchText(query);
     console.log("Searching for:", query);
   };
+
   const onLimitChange = (limit: number) => {
     setPageLimit(limit);
     setCurrentPage(1);
     console.log("onLimitChange for:", limit);
   };
+
   const handlePageChange = (pageNumber: number) => {
     setCurrentPage(pageNumber);
   };
+
   const handleAddEditClick = (id: string | null = null) => {
     router.push({
-        pathname: '/users/add-edit',
-        query: { id: id }
+      pathname: "/roles/add-edit",
+      query: { id: id },
     });
-};
+  };
 
   return (
     <div className="flex justify-center items-center flex-col h-full">
       <Spinner
-        text="Loading user list..."
+        text="Loading role list..."
         closedIn={125000}
         onClose={() => setIsLoading(false)}
         isVisible={isLoading}
       />
       <PageTitleBar
-        title="Users"
-        btnText="Create User"
+        title="Roles"
+        btnText="Create Role"
         performSearch={performSearch}
         handleBtnClick={handleAddEditClick}
         searchDelay={800}
-        searchPlaceholder="Search Users"
+        searchPlaceholder="Search Roles"
       />
-      {users.length > 0 ? (
+      {roles.length > 0 ? (
         <>
           <div className="w-full max-w-full bg-white shadow-md">
             <div
@@ -155,46 +149,38 @@ const Users: FC = () => {
               <table className="w-full">
                 <thead className="bg-gray-100 border-b">
                   <tr>
-                    <th className="text-left py-2 px-3 border-r">Email</th>
-                    <th className="text-left py-2 px-3 border-r">Name</th>
-                    <th className="text-left py-2 px-3 border-r">Contact</th>
+                    <th className="text-left py-2 px-3 border-r">Role Name</th>
+                    <th className="text-left py-2 px-3 border-r">Role Level</th>
+                    <th className="text-left py-2 px-3 border-r">Created By</th>
+                    <th className="text-left py-2 px-3 border-r">Updated By</th>
                     <th className="text-center py-2 px-3 border-r">Status</th>
-                    <th className="text-center py-2 px-3 border-r">
-                      Subscription
-                    </th>
                     <th className="text-center py-2 px-3">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {users.map((user) => (
-                    <Fragment key={user._id}>
+                  {roles.map((role) => (
+                    <Fragment key={role._id}>
                       <tr className="border-b hover:bg-gray-50">
-                        <td className="py-2 px-3 border-r">{user.email}</td>
-                        <td className="py-2 px-3 border-r">{`${user.firstName} ${user.lastName}`}</td>
-                        <td className="py-2 px-3 border-r">{user.contact}</td>
+                        <td className="py-2 px-3 border-r">{role.roleName}</td>
+                        <td className="py-2 px-3 border-r">{role.roleLevel}</td>
+                        <td className="py-2 px-3 border-r">{role.createdBy}</td>
+                        <td className="py-2 px-3 border-r">{role.updatedBy}</td>
                         <td className="py-2 px-3 border-r text-center">
-                          {user.isActive ? (
-                            <span className="inline-block w-4 h-4 rounded-full bg-green-500"></span>
-                          ) : (
+                          {role.isDeleted ? (
                             <span className="inline-block w-4 h-4 rounded-full bg-red-500"></span>
-                          )}
-                        </td>
-                        <td className="py-2 px-3 border-r text-center">
-                          {user.isActiveSubscription ? (
-                            <span className="inline-block w-4 h-4 rounded-full bg-green-500"></span>
                           ) : (
-                            <span className="inline-block w-4 h-4 rounded-full bg-gray-400"></span>
+                            <span className="inline-block w-4 h-4 rounded-full bg-green-500"></span>
                           )}
                         </td>
                         <td className="py-2 px-3 flex justify-center items-center space-x-2">
                           <button
-                            onClick={() => handleAddEditClick(user._id)}
+                            onClick={() => handleAddEditClick(role._id)}
                             className="text-blue-500 hover:text-blue-700"
                           >
                             <BsPencilSquare className="h-5 w-5" />
                           </button>
                           <button
-                            onClick={() => handleDeleteUser(user._id)}
+                            onClick={() => handleDeleteRole(role._id)}
                             className="text-red-500 hover:text-red-700"
                           >
                             <BsTrash className="h-5 w-5" />
@@ -208,19 +194,19 @@ const Users: FC = () => {
             </div>
           </div>
           <Pagination
-            totalPage={Math.ceil(totalUsersCount / pageLimit)}
+            totalPage={Math.ceil(totalRolesCount / pageLimit)}
             currentPage={currentPage}
             onPageChange={handlePageChange}
             pageLimit={pageLimit}
             onLimitChange={onLimitChange}
-            totalItem={totalUsersCount + " Users"}
+            totalItem={totalRolesCount + " Roles"}
           />
         </>
       ) : (
-        <p>No users found.</p>
+        <p>No roles found.</p>
       )}
     </div>
   );
 };
 
-export default Users;
+export default Roles;

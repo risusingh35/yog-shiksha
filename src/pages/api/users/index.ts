@@ -15,9 +15,9 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     case "GET":
       await handleGetRequest(req, res);
       break;
-    // case "DELETE":
-    //   await handleDeleteRequest(req, res);
-    //   break;
+    case "DELETE":
+      await handleDeleteRequest(req, res);
+      break;
     // case "POST":
     //   await handlePostRequest(req, res);
     //   break;
@@ -29,38 +29,47 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       break;
   }
 };
-// const handleGetRequest = async (req: NextApiRequest, res: NextApiResponse) => {
-//   try {
+const handleDeleteRequest = async (
+  req: NextApiRequest,
+  res: NextApiResponse
+) => {
+  try {
+    const { id } = req.query;
+    if (!id) {
+      return res
+        .status(400)
+        .json({ success: false, error: "User ID is required" });
+    }
+    console.log({ id });
+    const user = await User.findById(id);
 
-//     const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ success: false, error: "User not found" });
+    }
 
-//     if (!user) {
-//       return res.status(404).json({ success: false, error: "User not found" });
-//     }
+    const now = new Date();
+    const formattedDateTime =
+      now
+        .toISOString()
+        .replace(/[-:.T]/g, "_")
+        .split("_")[0] +
+      "_" +
+      now.getHours() +
+      "_" +
+      now.getMinutes();
 
-//     const now = new Date();
-//     const formattedDateTime =
-//       now
-//         .toISOString()
-//         .replace(/[-:.T]/g, "_")
-//         .split("_")[0] +
-//       "_" +
-//       now.getHours() +
-//       "_" +
-//       now.getMinutes();
+    user.email = `${user.email}_deletedAt_${formattedDateTime}`;
+    user.isActive = false;
+    user.isDeleted = true;
+    user.deletedAt = now;
 
-//     user.email = `${user.email}_deletedAt_${formattedDateTime}`;
-//     user.isActive = false;
-//     user.isDeleted = true;
-//     user.deletedAt = now;
+    await user.save();
 
-//     await user.save();
-
-//     res.status(200).json({ success: true, data: user });
-//   } catch (error) {
-//     res.status(400).json({ success: false, error });
-//   }
-// };
+    res.status(200).json({ success: true, data: user });
+  } catch (error) {
+    res.status(400).json({ success: false, error });
+  }
+};
 const handleGetRequest = async (req: NextApiRequest, res: NextApiResponse) => {
   try {
     // Retrieve query parameters from request
@@ -117,7 +126,7 @@ const handlePutRequest = async (req: NextApiRequest, res: NextApiResponse) => {
         .json({ success: false, error: "Error parsing form data" });
     }
     console.log(fields);
-    
+
     const {
       id: [id],
       email: [email],
@@ -130,9 +139,8 @@ const handlePutRequest = async (req: NextApiRequest, res: NextApiResponse) => {
       isActive: [isActive],
       pinCode: [pinCode],
       addressLine1: [addressLine1],
-      
     } = fields as any;
-    console.log(id,"--------------");
+    console.log(id, "--------------");
     if (!id) {
       return res
         .status(400)

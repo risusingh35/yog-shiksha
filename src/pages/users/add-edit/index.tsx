@@ -154,8 +154,8 @@ const AddEditUser = () => {
         handleBtnClick={handleBackClick}
         isSearchVisible={false}
       />
-      <div className="flex justify-center items-center h-full w-full bg-gray-500">
-        <div className="bg-white p-8 rounded shadow-md w-full max-w-2xl">
+      <div className="flex justify-center items-center h-full w-full bg-gray-500 p-5">
+        <div className="bg-white p-5 rounded shadow-md w-full max-w-2xl">
           <h2 className="text-2xl mb-4">{id ? "Update" : "Create"} User</h2>
           <form onSubmit={handleSubmit}>
             <div className="mb-4 flex items-center">

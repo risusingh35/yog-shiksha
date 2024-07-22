@@ -69,7 +69,7 @@ const PageTitleBar: FC<PageTitleBarProps> = ({
   );
 
   return (
-    <div className="flex flex-row w-full text-3xl bg-gray-900 text-white px-4 mx-4 py-3 items-center justify-between border-b border-l border-l-white">
+    <div className="flex flex-row w-full text-3xl bg-gray-900 text-white px-4  py-1 items-center justify-between border-b border-l border-l-white">
       <div className="flex flex-row items-center">
         <div className="p-2.5 text-2xl">{title}</div>
         {isSearchVisible && (
